@@ -61,6 +61,18 @@
   .ca .copy{border:1px solid var(--line);background:var(--surface-2);color:var(--muted);border-radius:7px;padding:5px 10px;font-size:12px;cursor:pointer;font-family:var(--mono)}
   .ca .copy:hover{color:var(--text)}
 
+  /* go mining icon box */
+  .iconbox-row{margin-top:26px}
+  .iconbox{display:flex;align-items:center;gap:15px;padding:15px 17px;border:1px solid #262d36;border-radius:14px;
+    background:linear-gradient(135deg,rgba(70,224,176,.09),rgba(14,16,20,.9) 45%);max-width:560px;transition:.18s}
+  .iconbox:hover{border-color:rgba(70,224,176,.45);transform:translateY(-1px)}
+  .iconbox .ico{flex:none;width:46px;height:46px;border-radius:11px;display:grid;place-items:center;
+    background:#0b0f12;border:1px solid #232a33}
+  .iconbox .txt{min-width:0}
+  .iconbox .txt b{display:block;font-size:15px;letter-spacing:-.01em}
+  .iconbox .txt small{display:block;color:var(--muted);font-size:12.5px;margin-top:2px;line-height:1.45}
+  .iconbox .go{margin-left:auto;color:var(--accent);font-family:var(--mono);font-size:13px;flex:none}
+
   /* sections */
   section{padding:36px 0}
   .sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:20px}
@@ -150,6 +162,29 @@
       <span class="mono" style="font-size:11px;letter-spacing:.12em;color:var(--dim)">CA</span>
       <code id="caText">pending launch</code>
       <button class="copy" id="copyCa" type="button">copy</button>
+    </div>
+
+    <div class="iconbox-row">
+      <a class="iconbox" href="./mine.html">
+        <span class="ico">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <rect x="2" y="1" width="1" height="3" fill="#46e0b0"/>
+            <rect x="1" y="4" width="3" height="1" fill="#46e0b0"/>
+            <rect x="4" y="6" width="12" height="10" fill="#10161c" stroke="#46e0b0" stroke-width="1.6"/>
+            <rect x="7" y="9" width="2" height="2" fill="#46e0b0"/>
+            <rect x="11" y="9" width="2" height="2" fill="#46e0b0"/>
+            <rect x="7" y="13" width="6" height="1" fill="#ffc46b"/>
+            <rect x="3" y="8" width="1" height="3" fill="#26303a"/>
+            <rect x="16" y="8" width="1" height="3" fill="#26303a"/>
+            <rect x="7" y="17" width="6" height="1" fill="#1e262e"/>
+          </svg>
+        </span>
+        <span class="txt">
+          <b>Go Mining</b>
+          <small>Arm the rig, crack a block, mint a pixel Orebot. 1,000 supply at 0.001 BNB.</small>
+        </span>
+        <span class="go">&#8594;</span>
+      </a>
     </div>
   </div>
 
