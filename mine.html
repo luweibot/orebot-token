@@ -784,7 +784,7 @@ function drawBot(ctx, tokenId, tMs) {
 
   // rig detail
   if (t.rig === "bolts") { px(hx - 1, hy + 4, 1, 2, P.shell); px(hx + hw, hy + 4, 1, 2, P.shell); }
-  else if (t.rig === "vents") { for (let i = 0; i < 3; i++) px(hx + 2, hy + hh - 2 + 0, 1, 0, P.acc); px(hx + 2 + i * 2, hy + hh - 2, 1, 1, P.acc); }
+  else if (t.rig === "vents") { for (let i = 0; i < 3; i++) px(hx + 2 + i * 2, hy + hh - 2, 1, 1, P.acc); }
   else if (t.rig === "halo") {
     ctx.fillStyle = P.acc;
     const r = 9.5 + Math.sin(tMs / 800) * 0.4;
@@ -872,6 +872,16 @@ if (eth()) {
 }
 
 /* boot */
+// QA mode (?qa=1): short window + a demo rig so the found-state can be
+// inspected without a wallet. Cosmetic only - minting still needs a real wallet.
+const QA = new URLSearchParams(location.search).has("qa");
+if (QA && !eth()) {
+  S.account = "0x000000000000000000000000000000000000dEaD";
+  $("connectBtn").textContent = "qa mode";
+  $("armBtn").disabled = false;
+  $("armBtn").textContent = "Arm the rig (qa)";
+  $("rigId").textContent = "rig · qa";
+}
 renderSupply(0);
 drawBot($("pfp").getContext("2d"), 1, performance.now());
 animatePfp(1);                      // idle: show bot #1 animating in the claim card
