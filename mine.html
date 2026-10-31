@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>OREBOT Mining Rig — mint a pixel bot on BNB Chain</title>
+<meta name="description" content="Point the rig, hash the block, claim your pixel Orebot on BNB Smart Chain. 1,000 supply. 0.001 BNB per bot. Common to Ultimate." />
+<meta property="og:title" content="OREBOT Mining Rig — mint a pixel bot on BNB Chain" />
+<meta property="og:description" content="1,000 pixel bots. 0.001 BNB each. Tier rolled onchain, redeemable for OREBOT." />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230b0d10'/%3E%3Crect x='9' y='11' width='14' height='11' fill='none' stroke='%2346e0b0' stroke-width='2'/%3E%3Crect x='13' y='15' width='2' height='2' fill='%2346e0b0'/%3E%3Crect x='18' y='15' width='2' height='2' fill='%2346e0b0'/%3E%3C/svg%3E" />
+<style>
+  :root{
+    --bg:#070809; --panel:#0d0f12; --panel-2:#11141a; --line:#1d222a;
+    --text:#e9ecef; --muted:#8a919c; --dim:#59606b;
+    --acid:#46e0b0; --acid-dim:rgba(70,224,176,.12);
+    --amber:#ffc46b; --violet:#a48bff; --cyan:#63d8ff; --red:#ff7a7a;
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+    --r:14px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    background-image:
+      linear-gradient(rgba(255,255,255,.022) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.022) 1px,transparent 1px),
+      radial-gradient(760px 380px at 50% -160px,rgba(70,224,176,.10),transparent 70%);
+    background-size:44px 44px,44px 44px,100% 100%;
+  }
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+  .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+  header{position:sticky;top:0;z-index:30;background:rgba(7,8,9,.82);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  .nav{display:flex;align-items:center;gap:16px;height:62px}
+  .brand{display:flex;align-items:center;gap:9px;font-weight:650;font-size:14.5px;letter-spacing:.04em}
+  .nav .spacer{margin-left:auto}
+  .nav a.lnk{font-size:13.5px;color:var(--muted)}
+  .nav a.lnk:hover{color:var(--text)}
+  @media(max-width:720px){.nav a.lnk{display:none}}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:10px;padding:10px 16px;font-size:13.5px;font-weight:640;border:1px solid var(--line);background:var(--panel);color:var(--text);cursor:pointer;transition:.16s;font-family:inherit}
+  .btn:hover{border-color:#2c333d;background:var(--panel-2)}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  .btn-primary{background:var(--acid);color:#04140e;border-color:transparent}
+  .btn-primary:hover:not(:disabled){background:#5eebb9}
+  .btn-amber{background:var(--amber);color:#1a1204;border-color:transparent}
+  .btn-amber:hover:not(:disabled){background:#ffd08c}
+
+  .hero{padding:34px 0 10px}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--acid);background:var(--acid-dim);border:1px solid rgba(70,224,176,.22);padding:5px 11px;border-radius:99px}
+  .pulse{width:6px;height:6px;border-radius:50%;background:var(--acid);animation:pulse 1.8s infinite}
+  @keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(70,224,176,.5)}50%{opacity:.55;box-shadow:0 0 0 5px rgba(70,224,176,0)}}
+  h1{font-size:clamp(30px,4.6vw,46px);line-height:1.03;letter-spacing:-.03em;margin:16px 0 0;font-weight:700}
+  .sub{color:var(--muted);font-size:15px;max-width:640px;margin:12px 0 0}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+  .chip{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--panel);border-radius:99px;padding:6px 12px;font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+  .chip b{color:var(--text);font-weight:600}
+
+  .layout{display:grid;grid-template-columns:1.55fr 1fr;gap:14px;margin:22px 0 0}
+  @media(max-width:1000px){.layout{grid-template-columns:1fr}}
+
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+  .panel-h{display:flex;align-items:center;gap:10px;padding:13px 16px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.022),transparent)}
+  .panel-h h2{margin:0;font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);font-family:var(--mono);font-weight:600}
+  .panel-h .right{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--dim)}
+  .panel-b{padding:16px}
+
+  /* rig */
+  .rig-screen{position:relative;border:1px solid var(--line);border-radius:10px;background:#06080a;overflow:hidden}
+  #stream{display:block;width:100%;height:300px}
+  .scan{position:absolute;left:0;right:0;height:70px;background:linear-gradient(180deg,transparent,rgba(70,224,176,.07),transparent);animation:scan 4.5s linear infinite;pointer-events:none}
+  @keyframes scan{0%{top:-70px}100%{top:300px}}
+  .rig-overlay{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;padding:12px 14px;pointer-events:none}
+  .rig-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+  .status{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:4px 9px;border-radius:6px;border:1px solid var(--line);background:rgba(0,0,0,.5);color:var(--muted)}
+  .status.on{color:var(--acid);border-color:rgba(70,224,176,.4);background:rgba(70,224,176,.1)}
+  .status.hit{color:var(--amber);border-color:rgba(255,196,107,.45);background:rgba(255,196,107,.12)}
+  .big-hash{font-family:var(--mono);font-size:clamp(22px,3.4vw,34px);font-weight:600;color:var(--acid);text-shadow:0 0 22px rgba(70,224,176,.35);line-height:1}
+  .big-hash small{font-size:12px;color:var(--dim);letter-spacing:.1em;margin-left:5px}
+
+  .readouts{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-top:12px}
+  @media(max-width:620px){.readouts{grid-template-columns:repeat(2,1fr)}}
+  .ro{background:var(--panel-2);padding:10px 12px}
+  .ro .k{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+  .ro .v{font-family:var(--mono);font-size:14px;margin-top:3px;color:var(--text)}
+  .bar{height:7px;border-radius:99px;background:#0a0d10;border:1px solid var(--line);overflow:hidden;margin-top:12px}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#2c9d7f,var(--acid));transition:width .8s linear}
+  .log{margin-top:12px;height:132px;overflow:auto;background:#06080a;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-family:var(--mono);font-size:11.5px;line-height:1.75;color:#6f7883}
+  .log div{white-space:pre-wrap}
+  .log .ok{color:var(--acid)}
+  .log .hit{color:var(--amber)}
+  .log .warn{color:var(--red)}
+
+  /* side panels */
+  .stat-row{display:flex;justify-content:space-between;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px}
+  .stat-row:last-child{border-bottom:0}
+  .stat-row span{color:var(--muted)}
+  .stat-row b{font-family:var(--mono);font-weight:600}
+  .supply-bar{height:9px;border-radius:99px;background:#0a0d10;border:1px solid var(--line);overflow:hidden;margin:12px 0 6px}
+  .supply-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#2c9d7f,var(--acid));transition:width .5s}
+
+  .tier{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px}
+  .tier:last-child{border-bottom:0}
+  .tdot{width:9px;height:9px;border-radius:2px;flex:none}
+  .t-c{background:#8b94a0}.t-r{background:var(--cyan)}.t-e{background:var(--violet)}.t-u{background:var(--amber)}
+  .tier .nm{font-weight:600}
+  .tier .pc{color:var(--dim);font-family:var(--mono);font-size:11.5px;margin-left:6px}
+  .tier .rw{margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--muted)}
+  .tier .rw b{color:var(--text)}
+
+  /* claim */
+  .pfp-box{display:flex;gap:14px;align-items:center}
+  .pfp-frame{border:1px solid var(--line);border-radius:10px;background:#06080a;padding:8px;flex:none}
+  #pfp{display:block;width:132px;height:132px;image-rendering:pixelated}
+  .traits{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px;margin-top:12px;font-size:11.5px;font-family:var(--mono)}
+  .traits div{display:flex;justify-content:space-between;gap:6px;color:var(--muted);border-bottom:1px dashed #171c22;padding:3px 0}
+  .traits b{color:var(--text);font-weight:500}
+  .hint{font-size:12px;color:var(--dim);margin-top:10px;line-height:1.6}
+  .msg{margin-top:10px;font-size:12.5px;padding:9px 11px;border-radius:8px;border:1px solid var(--line);background:var(--panel-2);color:var(--muted);display:none}
+  .msg.err{border-color:rgba(255,122,122,.35);background:rgba(255,122,122,.08);color:#ffb3b3}
+  .msg.ok{border-color:rgba(70,224,176,.3);background:var(--acid-dim);color:#9df0d4}
+  .msg.show{display:block}
+  .reveal-badge{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;padding:3px 8px;border-radius:5px;border:1px solid var(--line);color:var(--muted)}
+  .full{width:100%}
+
+  /* how it works */
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
+  @media(max-width:900px){.grid3{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+  .card h3{margin:0 0 7px;font-size:14.5px;font-weight:640}
+  .card p{margin:0;color:var(--muted);font-size:13.5px}
+  section{padding:26px 0}
+  .sec-h{display:flex;align-items:baseline;gap:12px;margin-bottom:14px}
+  .sec-h h2{font-size:18px;margin:0;letter-spacing:-.01em}
+  .sec-h span{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+
+  input.inp{width:100%;background:#06080a;border:1px solid var(--line);border-radius:9px;color:var(--text);font-family:var(--mono);font-size:13px;padding:10px 12px;outline:none}
+  input.inp:focus{border-color:#2c333d}
+  .row2{display:flex;gap:8px}
+
+  footer{border-top:1px solid var(--line);margin-top:26px;padding:26px 0 44px;color:var(--dim);font-size:12.5px}
+  .foot{display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;align-items:center}
+  .foot a{color:var(--muted)}.foot a:hover{color:var(--text)}
+  .fine{margin-top:14px;max-width:820px;line-height:1.62;color:#5a616b}
+  .flash{position:fixed;bottom:20px;left:50%;transform:translate(-50%,20px);background:var(--acid);color:#04140e;font-weight:650;font-size:13px;padding:9px 16px;border-radius:99px;opacity:0;transition:.22s;pointer-events:none;z-index:50}
+  .flash.on{opacity:1;transform:translate(-50%,0)}
+  .dot-line{display:flex;align-items:center;gap:6px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="./index.html">
+      <svg width="22" height="22" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#0d0f12" stroke="#1d222a"/><circle cx="16" cy="16" r="7" fill="none" stroke="#46e0b0" stroke-width="2.5"/><circle cx="16" cy="16" r="2.4" fill="#46e0b0"/></svg>
+      OREBOT
+    </a>
+    <span class="spacer"></span>
+    <a class="lnk" href="./index.html">Token</a>
+    <a class="lnk" href="#tiers">Tiers</a>
+    <a class="lnk" href="#redeem">Redeem</a>
+    <button class="btn btn-primary" id="connectBtn">Connect wallet</button>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="hero">
+    <span class="eyebrow"><span class="pulse"></span> BNB SMART CHAIN · 1,000 BOTS · ERC-721</span>
+    <h1>Point the rig.<br />Hash the block. Keep the bot.</h1>
+    <p class="sub">Every block the rig cracks assembles one pixel Orebot. One bot per block, 0.001 BNB minted straight to the project wallet, tier rolled onchain the moment your transaction lands. Burn it later to claim OREBOT.</p>
+    <div class="chips">
+      <span class="chip">MINT <b>0.001 BNB</b></span>
+      <span class="chip">SUPPLY <b id="chipSupply">1,000</b></span>
+      <span class="chip">REWARD <b>10K – 500K OREBOT</b></span>
+      <span class="chip" id="chipNet">NETWORK <b>BNB 56</b></span>
+    </div>
+  </div>
+
+  <div class="layout">
+    <!-- ================= RIG ================= -->
+    <div>
+      <div class="panel">
+        <div class="panel-h">
+          <h2>Rig console</h2>
+          <span class="right" id="rigId">rig · idle</span>
+        </div>
+        <div class="panel-b">
+          <div class="rig-screen">
+            <canvas id="stream" width="880" height="300"></canvas>
+            <div class="scan"></div>
+            <div class="rig-overlay">
+              <div class="rig-top">
+                <span class="status" id="rigStatus">offline</span>
+                <span class="status" id="rigTimer">--:--</span>
+              </div>
+              <div>
+                <div class="big-hash"><span id="hashrate">0.0</span><small>MH/s</small></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="readouts">
+            <div class="ro"><div class="k">Difficulty</div><div class="v" id="roDiff">—</div></div>
+            <div class="ro"><div class="k">Nonce</div><div class="v" id="roNonce">—</div></div>
+            <div class="ro"><div class="k">Target</div><div class="v" id="roTarget">—</div></div>
+            <div class="ro"><div class="k">Shares</div><div class="v" id="roShares">0</div></div>
+          </div>
+
+          <div class="bar"><i id="rigBar"></i></div>
+
+          <div class="log" id="log">
+            <div>[rig] console ready. connect a wallet to arm the rig.</div>
+          </div>
+
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <button class="btn btn-primary full" id="armBtn" disabled>Connect wallet to arm</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= SIDE ================= -->
+    <div style="display:flex;flex-direction:column;gap:14px">
+
+      <div class="panel">
+        <div class="panel-h"><h2>Claim</h2><span class="right" id="claimState">waiting</span></div>
+        <div class="panel-b">
+          <div class="pfp-box">
+            <div class="pfp-frame"><canvas id="pfp" width="24" height="24"></canvas></div>
+            <div style="min-width:0">
+              <div style="font-weight:650;font-size:15px" id="botName">No bot yet</div>
+              <div style="font-size:12.5px;color:var(--muted);margin-top:3px" id="botSub">Arm the rig and wait for a block.</div>
+              <div style="margin-top:9px" class="reveal-badge" id="tierBadge">rarity · onchain</div>
+            </div>
+          </div>
+
+          <div class="traits" id="traits">
+            <div><span>Shell</span><b>—</b></div><div><span>Eyes</span><b>—</b></div>
+            <div><span>Mouth</span><b>—</b></div><div><span>Antenna</span><b>—</b></div>
+            <div><span>Rig</span><b>—</b></div><div><span>Aura</span><b>—</b></div>
+          </div>
+
+          <button class="btn btn-amber full" id="mintBtn" style="margin-top:12px" disabled>Mint · 0.001 BNB</button>
+          <div class="msg" id="claimMsg"></div>
+          <div class="hint">Rarity is rolled by the contract when your transaction confirms, so it can't be previewed or re-rolled client-side.</div>
+        </div>
+      </div>
+
+      <div class="panel" id="tiers">
+        <div class="panel-h"><h2>Supply &amp; tiers</h2><span class="right" id="supplyRight">0 / 1000</span></div>
+        <div class="panel-b">
+          <div class="supply-bar"><i id="supplyBar"></i></div>
+          <div class="tier"><span class="tdot t-c"></span><span class="nm">Common</span><span class="pc">60%</span><span class="rw"><b>10,000</b> OREBOT</span></div>
+          <div class="tier"><span class="tdot t-r"></span><span class="nm">Rare</span><span class="pc">25%</span><span class="rw"><b>30,000</b> OREBOT</span></div>
+          <div class="tier"><span class="tdot t-e"></span><span class="nm">Epic</span><span class="pc">12%</span><span class="rw"><b>100,000</b> OREBOT</span></div>
+          <div class="tier"><span class="tdot t-u"></span><span class="nm">Ultimate</span><span class="pc">3%</span><span class="rw"><b>500,000</b> OREBOT</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <section>
+    <div class="sec-h"><h2>How the rig works</h2><span>4 steps</span></div>
+    <div class="grid3">
+      <div class="card"><h3>Arm the rig</h3><p>Connect any BNB Chain wallet. The rig picks a block window between 5 and 10 minutes for you, differently every session, so no two runs line up.</p></div>
+      <div class="card"><h3>Wait for the hit</h3><p>The console streams nonces against the target. When the hash matches, the block is claimed and your bot is assembled.</p></div>
+      <div class="card"><h3>Mint it</h3><p>One transaction: 0.001 BNB goes to the project wallet and the bot is minted to you in the same call. Payment and delivery are atomic.</p></div>
+    </div>
+  </section>
+
+  <section id="redeem">
+    <div class="sec-h"><h2>Burn a bot, claim OREBOT</h2><span>one-time redeem</span></div>
+    <div class="grid3">
+      <div class="card" style="grid-column:span 2">
+        <h3>Check a bot</h3>
+        <p style="margin-bottom:12px">Enter a token id you own. The rig reads the tier onchain and shows what burning it is worth.</p>
+        <div class="row2">
+          <input class="inp" id="redeemId" placeholder="token id, e.g. 42" inputmode="numeric" />
+          <button class="btn" id="checkBtn" style="white-space:nowrap">Check</button>
+        </div>
+        <div class="msg" id="redeemMsg"></div>
+        <button class="btn btn-primary full" id="redeemBtn" style="margin-top:10px" disabled>Burn &amp; claim</button>
+      </div>
+      <div class="card">
+        <h3>One burn, one claim</h3>
+        <p>The NFT is destroyed in the burn transaction, so the same bot can never be redeemed twice. Payout is issued from the redeem record once the OREBOT reward distributor is live.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <span class="mono">OREBOT RIG · BNB CHAIN 56</span>
+      <div style="display:flex;gap:16px;flex-wrap:wrap">
+        <a href="./index.html">Token page</a>
+        <a href="https://x.com/orebot_network" target="_blank" rel="noopener">@orebot_network</a>
+        <a href="https://bscscan.com" target="_blank" rel="noopener">BscScan</a>
+      </div>
+    </div>
+    <p class="fine">The rig visual is presentation: the hashrate, difficulty, nonce and target readouts are simulated client-side and do not represent real proof-of-work. Your bot, its tier and its one-time reward are created onchain and confirmed by the transaction. Nothing is reserved until a mint transaction confirms. The 0.001 BNB mint fee is non-refundable and goes directly to <span class="mono">0x0Bee61D45d42D7342D57Ea7581D17581203447A8</span>. Nothing here is financial advice; Orebot is independent of Binance and SPACE ID.</p>
+  </div>
+</footer>
+
+<div class="flash" id="flash">ok</div>
+
+<script>
+/* =====================================================================
+   CONFIG — set contract to the deployed OrebotPFP address to go live.
+   ===================================================================== */
+const CONFIG = {
+  contract: "",                                   // ← deployed OrebotPFP address
+  chainId: 56,
+  chainHex: "0x38",
+  rpc: "https://bsc-dataseed.binance.org",
+  priceWei: 1000000000000000n,                    // 0.001 BNB
+  maxSupply: 1000,
+  minMs: 5 * 60 * 1000,
+  maxMs: 10 * 60 * 1000,
+  sel: { mint: "0x1249c58b", redeem: "0xdb006a75", totalSupply: "0x18160ddd",
+         tierOf: "0x53f96df2", ownerOf: "0x6352211e", rewardFor: "0x78aafe42" }
+};
+const TIERS = { 0:"—", 1:"Common", 2:"Rare", 3:"Epic", 4:"Ultimate" };
+const TIER_COLOR = { 1:"#8b94a0", 2:"#63d8ff", 3:"#a48bff", 4:"#ffc46b" };
+
+const $ = (id) => document.getElementById(id);
+const flash = (m) => { const f=$("flash"); f.textContent=m; f.classList.add("on"); setTimeout(()=>f.classList.remove("on"),1500); };
+const hex = (n) => "0x" + n.toString(16);
+
+/* ------------------------------ state ------------------------------ */
+const S = {
+  account: null, chain: null, supply: 0,
+  phase: "idle",              // idle | armed | hit | minting | minted
+  mine: null,                 // {startedAt, durationMs}
+  found: null,                // {tokenId, traits}
+  timer: null, raf: null
+};
+
+/* --------------------------- wallet layer -------------------------- */
+const eth = () => window.ethereum;
+
+async function connect() {
+  if (!eth()) { log("no injected wallet found", "warn"); return; }
+  try {
+    const accts = await eth().request({ method: "eth_requestAccounts" });
+    S.account = accts[0];
+    await ensureChain();
+    $("connectBtn").textContent = short(S.account);
+    $("connectBtn").classList.remove("btn-primary");
+    $("armBtn").disabled = false;
+    $("armBtn").textContent = "Arm the rig";
+    log("wallet linked " + short(S.account), "ok");
+    await loadSupply();
+    resume();
+  } catch (e) { log("connect rejected: " + (e.code === 4001 ? "user denied" : e.message), "warn"); }
+}
+
+async function ensureChain() {
+  const id = await eth().request({ method: "eth_chainId" });
+  S.chain = parseInt(id, 16);
+  if (S.chain === CONFIG.chainId) return;
+  try {
+    await eth().request({ method: "wallet_switchEthereumChain", params: [{ chainId: CONFIG.chainHex }] });
+    S.chain = CONFIG.chainId;
+  } catch (e) {
+    if (e.code === 4902) {
+      await eth().request({ method: "wallet_addEthereumChain", params: [{
+        chainId: CONFIG.chainHex, chainName: "BNB Smart Chain",
+        nativeCurrency: { name: "BNB", symbol: "BNB", decimals: 18 },
+        rpcUrls: [CONFIG.rpc], blockExplorerUrls: ["https://bscscan.com"]
+      }]});
+      S.chain = CONFIG.chainId;
+    } else throw e;
+  }
+}
+
+const short = (a) => a ? a.slice(0,6) + "…" + a.slice(-4) : "";
+
+/* --------------------------- chain reads --------------------------- */
+async function rpc(method, params) {
+  const r = await fetch(CONFIG.rpc, { method:"POST", headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({ jsonrpc:"2.0", id:1, method, params }) });
+  const j = await r.json();
+  if (j.error) throw new Error(j.error.message);
+  return j.result;
+}
+async function callContract(data) {
+  if (!CONFIG.contract) throw new Error("contract not deployed");
+  return rpc("eth_call", [{ to: CONFIG.contract, data }, "latest"]);
+}
+async function loadSupply() {
+  if (!CONFIG.contract) { renderSupply(0); return; }
+  try {
+    const res = await callContract(CONFIG.sel.totalSupply);
+    renderSupply(parseInt(res, 16));
+  } catch (e) { renderSupply(0); }
+}
+function renderSupply(n) {
+  S.supply = n;
+  $("supplyRight").textContent = n + " / " + CONFIG.maxSupply;
+  $("supplyBar").style.width = Math.min(100, n / CONFIG.maxSupply * 100) + "%";
+  $("chipSupply").textContent = (CONFIG.maxSupply - n) + " LEFT";
+}
+
+/* ------------------------- mining scheduling ----------------------- */
+const storeKey = () => "orebot.rig.v1." + (S.account || "").toLowerCase();
+
+function rollDuration() {
+  if (new URLSearchParams(location.search).has("qa")) return 9000; // QA: 9s window
+  const buf = new Uint32Array(1);
+  crypto.getRandomValues(buf);
+  const span = CONFIG.maxMs - CONFIG.minMs;
+  return CONFIG.minMs + (buf[0] % span);
+}
+
+function arm() {
+  if (!S.account) return flash("connect first");
+  const key = storeKey();
+  let saved = null;
+  try { saved = JSON.parse(localStorage.getItem(key) || "null"); } catch {}
+  if (saved && saved.startedAt && Date.now() - saved.startedAt < saved.durationMs) {
+    S.mine = saved;
+    log("resuming block window, " + fmtLeft() + " left", "ok");
+  } else {
+    S.mine = { startedAt: Date.now(), durationMs: rollDuration() };
+    localStorage.setItem(key, JSON.stringify(S.mine));
+    log("rig armed · block window " + Math.round(S.mine.durationMs/60000) + " min", "ok");
+  }
+  S.phase = "armed";
+  setStatus("scanning", "on");
+  $("rigStatus").textContent = "scanning";
+  $("rigId").textContent = "rig · " + short(S.account);
+  $("armBtn").textContent = "Armed";
+  $("armBtn").disabled = true;
+  $("claimState").textContent = "mining";
+  startLoop();
+}
+
+function resume() {
+  let saved = null;
+  try { saved = JSON.parse(localStorage.getItem(storeKey()) || "null"); } catch {}
+  if (saved && saved.startedAt && Date.now() - saved.startedAt < saved.durationMs) {
+    S.mine = saved; S.phase = "armed";
+    setStatus("scanning", "on");
+    $("rigStatus").textContent = "scanning";
+    $("armBtn").textContent = "Armed"; $("armBtn").disabled = true;
+    $("claimState").textContent = "mining";
+    log("found an armed rig for this wallet · resuming", "ok");
+    startLoop();
+  } else {
+    $("armBtn").disabled = false;
+  }
+}
+
+function fmtLeft() {
+  if (!S.mine) return "--:--";
+  const left = Math.max(0, S.mine.durationMs - (Date.now() - S.mine.startedAt));
+  const m = Math.floor(left / 60000), s = Math.floor(left % 60000 / 1000);
+  return String(m).padStart(2,"0") + ":" + String(s).padStart(2,"0");
+}
+
+function startLoop() {
+  if (S.timer) clearInterval(S.timer);
+  S.timer = setInterval(tick, 700);
+  tick();
+}
+
+function tick() {
+  if (S.phase !== "armed" || !S.mine) return;
+  const elapsed = Date.now() - S.mine.startedAt;
+  const pct = Math.min(100, elapsed / S.mine.durationMs * 100);
+
+  const hr = 34 + Math.sin(elapsed / 9000) * 4 + Math.random() * 3.2;
+  $("hashrate").textContent = hr.toFixed(1);
+  $("roDiff").textContent = (1.42e9 + Math.floor(elapsed / 4000) * 137).toLocaleString("en-US");
+  $("roNonce").textContent = "0x" + Math.floor(elapsed * 91.7 + Math.random()*5000).toString(16);
+  $("roTarget").textContent = "0x0000" + Math.floor(0xb000 + Math.random()*0x0fff).toString(16) + "…";
+  $("rigBar").style.width = pct.toFixed(1) + "%";
+  $("rigTimer").textContent = fmtLeft();
+
+  if (Math.random() < 0.30) {
+    const n = Math.floor(elapsed * 91.7);
+    if (Math.random() < 0.12) {
+      log("share rejected · stale window 0x" + (n % 0xffff).toString(16).padStart(4,"0"), "warn");
+    } else {
+      log("nonce 0x" + n.toString(16) + " · share accepted · " + hr.toFixed(1) + " MH/s");
+      $("roShares").textContent = (parseInt($("roShares").textContent) + 1);
+    }
+  }
+
+  if (elapsed >= S.mine.durationMs) hit();
+}
+
+function hit() {
+  clearInterval(S.timer); S.timer = null;
+  S.phase = "hit";
+  localStorage.removeItem(storeKey());
+  const tokenId = (S.supply || 0) + 1;
+  S.found = { tokenId, traits: traitsFor(tokenId) };
+
+  $("rigStatus").textContent = "block found"; setStatus("block found", "hit");
+  $("rigBar").style.width = "100%";
+  $("rigTimer").textContent = "00:00";
+  log("TARGET HASH MATCHED · block candidate accepted", "hit");
+  log("bot #" + tokenId + " assembled · preview ready", "hit");
+  showFound(tokenId);
+}
+
+function setStatus(text, cls) {
+  const el = $("rigStatus");
+  el.textContent = text;
+  el.className = "status" + (cls ? " " + cls : "");
+}
+
+/* ------------------------------ claim UI --------------------------- */
+function showFound(tokenId) {
+  $("botName").textContent = "Bot #" + tokenId;
+  $("botSub").textContent = "Found by this rig · mint to claim";
+  $("tierBadge").textContent = "rarity · rolled at mint";
+  $("tierBadge").style.color = "var(--amber)";
+  $("tierBadge").style.borderColor = "rgba(255,196,107,.45)";
+  renderTraits(S.found.traits);
+  $("claimState").textContent = "ready";
+  $("mintBtn").disabled = false;
+  $("mintBtn").textContent = "Mint · 0.001 BNB";
+  $("pfp").classList.add("armed");
+  animatePfp(tokenId);
+  if (!CONFIG.contract) {
+    msg("claimMsg", "The contract isn't deployed yet, so minting is disabled. The rig preview is live and the mint button activates the moment the contract address is set.", "err");
+  }
+}
+
+async function mint() {
+  if (!S.account) return flash("connect first");
+  if (!CONFIG.contract) return msg("claimMsg", "Contract not deployed yet — minting is disabled.", "err");
+  try {
+    $("mintBtn").disabled = true; $("mintBtn").textContent = "Confirm in wallet…";
+    $("claimState").textContent = "minting";
+    await ensureChain();
+    const tx = await eth().request({
+      method: "eth_sendTransaction",
+      params: [{ from: S.account, to: CONFIG.contract, value: hex(CONFIG.priceWei), data: CONFIG.sel.mint }]
+    });
+    log("tx sent " + tx.slice(0,10) + "…", "ok");
+    $("mintBtn").textContent = "Mining into block…";
+    const rc = await waitReceipt(tx);
+    if (rc.status !== "0x1") throw new Error("transaction reverted");
+    const tokenId = tokenIdFromReceipt(rc);
+    await afterMint(tokenId, tx);
+  } catch (e) {
+    const m = e.code === 4001 ? "You rejected the transaction in your wallet." : (e.message || "mint failed");
+    msg("claimMsg", m, "err");
+    $("mintBtn").disabled = false; $("mintBtn").textContent = "Mint · 0.001 BNB";
+    $("claimState").textContent = "ready";
+    log("mint failed: " + m, "warn");
+  }
+}
+
+async function afterMint(tokenId, txHash) {
+  S.phase = "minted";
+  $("claimState").textContent = "minted";
+  $("mintBtn").disabled = true;
+  $("mintBtn").textContent = "Minted";
+
+  let tier = 0;
+  try {
+    const t = await callContract(CONFIG.sel.tierOf + tokenId.toString(16).padStart(64,"0"));
+    tier = parseInt(t, 16);
+  } catch {}
+  const reward = { 1:"10,000", 2:"30,000", 3:"100,000", 4:"500,000" }[tier] || "—";
+
+  $("botName").textContent = "Bot #" + tokenId;
+  $("botSub").textContent = "Minted to " + short(S.account);
+  $("tierBadge").textContent = (TIERS[tier] || "Tier") + " · " + reward + " OREBOT";
+  $("tierBadge").style.color = TIER_COLOR[tier] || "var(--muted)";
+  $("tierBadge").style.borderColor = "currentColor";
+  const url = "https://bscscan.com/tx/" + txHash;
+  msg("claimMsg", 'Block cracked. Bot #' + tokenId + " is in your wallet · " + '<a href="' + url + '" target="_blank" rel="noopener" style="color:#9df0d4">view tx</a>', "ok");
+  log("minted bot #" + tokenId + " · tier " + (TIERS[tier]||"?"), "ok");
+  animatePfp(tokenId);
+  await loadSupply();
+  $("armBtn").disabled = false;
+  $("armBtn").textContent = "Arm the rig again";
+  S.phase = "idle"; S.mine = null; S.found = null;
+  setStatus("complete", "on");
+}
+
+function tokenIdFromReceipt(rc) {
+  const TRANSFER = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef";
+  for (const l of rc.logs || []) {
+    if (l.topics && l.topics[0] === TRANSFER && l.topics.length === 4 &&
+        l.address.toLowerCase() === CONFIG.contract.toLowerCase()) {
+      return parseInt(l.topics[3], 16);
+    }
+  }
+  return (S.supply || 0) + 1;
+}
+
+async function waitReceipt(hash) {
+  for (let i = 0; i < 90; i++) {
+    const rc = await rpc("eth_getTransactionReceipt", [hash]);
+    if (rc) return rc;
+    await new Promise(r => setTimeout(r, 2000));
+  }
+  throw new Error("no receipt yet, check the explorer");
+}
+
+/* ------------------------------ redeem ----------------------------- */
+async function checkRedeem() {
+  const id = parseInt($("redeemId").value, 10);
+  if (!id) return msg("redeemMsg", "Enter a token id.", "err");
+  if (!CONFIG.contract) return msg("redeemMsg", "Contract not deployed yet.", "err");
+  try {
+    const pad = id.toString(16).padStart(64, "0");
+    const owner = await callContract(CONFIG.sel.ownerOf + pad);
+    const ownerAddr = "0x" + owner.slice(26);
+    const t = await callContract(CONFIG.sel.tierOf + pad);
+    const tier = parseInt(t, 16);
+    if (!tier) return msg("redeemMsg", "That bot has already been burned.", "err");
+    const r = await callContract(CONFIG.sel.rewardFor + tier.toString(16).padStart(64,"0"));
+    const amount = Number(BigInt(r) / 10n**18n).toLocaleString("en-US");
+    const mine = S.account && ownerAddr.toLowerCase() === S.account.toLowerCase();
+    msg("redeemMsg", "Bot #" + id + " · " + TIERS[tier] + " · burns for " + amount + " OREBOT · owner " + short(ownerAddr) + (mine ? " (you)" : ""), mine ? "ok" : "err");
+    $("redeemBtn").disabled = !mine;
+    $("redeemBtn").dataset.id = id;
+  } catch (e) {
+    msg("redeemMsg", "Could not read that token: " + (e.message || "unknown"), "err");
+  }
+}
+
+async function doRedeem() {
+  const id = parseInt($("redeemBtn").dataset.id || "0", 10);
+  if (!id) return;
+  try {
+    $("redeemBtn").disabled = true; $("redeemBtn").textContent = "Confirm in wallet…";
+    const tx = await eth().request({ method: "eth_sendTransaction",
+      params: [{ from: S.account, to: CONFIG.contract, data: CONFIG.sel.redeem + id.toString(16).padStart(64,"0") }] });
+    const rc = await waitReceipt(tx);
+    if (rc.status !== "0x1") throw new Error("burn reverted");
+    msg("redeemMsg", "Bot #" + id + " burned. Your OREBOT claim is recorded onchain and pays out once the distributor is live.", "ok");
+    $("redeemBtn").textContent = "Burned";
+  } catch (e) {
+    msg("redeemMsg", e.code === 4001 ? "Rejected in wallet." : (e.message || "burn failed"), "err");
+    $("redeemBtn").disabled = false; $("redeemBtn").textContent = "Burn & claim";
+  }
+}
+
+/* --------------------------- pixel renderer ------------------------ */
+function rngFor(seed) {
+  let h = 2166136261 ^ (seed | 0);
+  return () => {
+    h += 0x6D2B79F5;
+    let t = h;
+    t = Math.imul(t ^ t >>> 15, t | 1);
+    t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+const PALETTES = [
+  { shell:"#2f3944", face:"#10161c", eye:"#46e0b0", bg:"#0b1218", bg2:"#0e1720", acc:"#46e0b0" },
+  { shell:"#4a3a24", face:"#191207", eye:"#ffc46b", bg:"#120d07", bg2:"#170f08", acc:"#ffc46b" },
+  { shell:"#2b3a52", face:"#0c121c", eye:"#63d8ff", bg:"#080d14", bg2:"#0a1119", acc:"#63d8ff" },
+  { shell:"#3a2f4f", face:"#120d1a", eye:"#a48bff", bg:"#0b0812", bg2:"#0e0a17", acc:"#a48bff" },
+  { shell:"#4c2f33", face:"#1a0d10", eye:"#ff8b8b", bg:"#120809", bg2:"#170a0c", acc:"#ff8b8b" },
+  { shell:"#2f4a43", face:"#0a1512", eye:"#8bf0c8", bg:"#07100d", bg2:"#091410", acc:"#8bf0c8" }
+];
+const EYE_STYLES = ["dots", "bars", "visor", "rings"];
+const MOUTH_STYLES = ["none", "line", "grill", "smile"];
+const ANTENNA_STYLES = ["single", "dual", "loop", "spike"];
+const RIG_STYLES = ["bolts", "vents", "halo", "none"];
+const AURA_STYLES = ["sparks", "orbit", "rain", "none"];
+
+function traitsFor(tokenId) {
+  const r = rngFor(tokenId * 2654435761);
+  return {
+    palette: Math.floor(r() * PALETTES.length),
+    eyes: EYE_STYLES[Math.floor(r() * EYE_STYLES.length)],
+    mouth: MOUTH_STYLES[Math.floor(r() * MOUTH_STYLES.length)],
+    antenna: ANTENNA_STYLES[Math.floor(r() * ANTENNA_STYLES.length)],
+    rig: RIG_STYLES[Math.floor(r() * RIG_STYLES.length)],
+    aura: AURA_STYLES[Math.floor(r() * AURA_STYLES.length)],
+    cap: r() < 0.35
+  };
+}
+
+function renderTraits(t) {
+  const P = PALETTES[t.palette];
+  const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+  $("traits").innerHTML =
+    '<div><span>Shell</span><b>' + cap(t.palette === 0 ? "steel" : ["steel","bronze","cobalt","violet","ember","jade"][t.palette]) + '</b></div>' +
+    '<div><span>Eyes</span><b>' + cap(t.eyes) + '</b></div>' +
+    '<div><span>Mouth</span><b>' + cap(t.mouth) + '</b></div>' +
+    '<div><span>Antenna</span><b>' + cap(t.antenna) + '</b></div>' +
+    '<div><span>Rig</span><b>' + cap(t.rig) + '</b></div>' +
+    '<div><span>Aura</span><b>' + Cap(t.aura) + '</b></div>';
+}
+const Cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+
+function drawBot(ctx, tokenId, tMs) {
+  const t = traitsFor(tokenId);
+  const P = PALETTES[t.palette];
+  const W = 24, H = 24;
+  ctx.clearRect(0, 0, W, H);
+
+  // background: two-tone dither
+  ctx.fillStyle = P.bg;
+  ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = P.bg2;
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    if ((x + y) % 2 === 0 && y > 2) ctx.fillRect(x, y, 1, 1);
+  }
+
+  const bob = Math.round(Math.sin(tMs / 620) * 0.7);
+  const px = (x, y, w, h, c) => { ctx.fillStyle = c; ctx.fillRect(x, y + bob, w, h); };
+
+  // aura
+  if (t.aura === "sparks") {
+    for (let i = 0; i < 3; i++) {
+      const a = tMs / 900 + i * 2.1;
+      px(12 + Math.round(Math.cos(a) * 8), 11 + Math.round(Math.sin(a) * 8), 1, 1, P.acc);
+    }
+  } else if (t.aura === "orbit") {
+    for (let i = 0; i < 6; i++) {
+      const a = tMs / 1400 + i;
+      px(12 + Math.round(Math.cos(a) * 9.2), 11 + Math.round(Math.sin(a) * 9.2), 1, 1, i % 2 ? P.eye : P.acc);
+    }
+  } else if (t.aura === "rain") {
+    for (let i = 0; i < 5; i++) {
+      const y = Math.floor((tMs / 220 + i * 7) % 22);
+      px(2 + (i * 5) % 20, y, 1, 1, P.acc);
+    }
+  }
+
+  // antenna
+  const blink = (tMs % 2400) < 700;
+  if (t.antenna === "single") {
+    px(11, 3, 2, 3, P.shell); px(11, 1, 2, 2, blink ? P.eye : P.face);
+  } else if (t.antenna === "dual") {
+    px(7, 4, 1, 3, P.shell); px(16, 4, 1, 3, P.shell);
+    px(7, 2, 1, 1, blink ? P.eye : P.face); px(16, 2, 1, 1, blink ? P.eye : P.face);
+  } else if (t.antenna === "loop") {
+    px(11, 4, 2, 2, P.shell);
+    ctx.fillStyle = blink ? P.eye : P.face;
+    ctx.fillRect(9, 1 + bob, 1, 1); ctx.fillRect(10, 1 + bob, 4, 1); ctx.fillRect(14, 2 + bob, 1, 2);
+  } else {
+    px(11, 2, 2, 4, P.shell); px(11, 0, 2, 2, blink ? P.eye : P.face);
+  }
+
+  // head shell with 1px corner cut
+  const hx = 5, hy = 6, hw = 14, hh = 12;
+  px(hx + 1, hy, hw - 2, hh, P.shell);
+  px(hx, hy + 1, hw, hh - 2, P.shell);
+
+  // face plate
+  px(hx + 2, hy + 2, hw - 4, hh - 4, P.face);
+
+  // eyes
+  const blinkNow = (tMs % 3600) < 130;
+  const eyY = hy + 4;
+  if (t.eyes === "dots") {
+    if (blinkNow) { px(8, eyY + 1, 2, 1, P.eye); px(14, eyY + 1, 2, 1, P.eye); }
+    else { px(8, eyY, 2, 2, P.eye); px(14, eyY, 2, 2, P.eye); }
+  } else if (t.eyes === "bars") {
+    px(8, eyY + (blinkNow ? 1 : 0), 3, blinkNow ? 1 : 2, P.eye);
+    px(13, eyY + (blinkNow ? 1 : 0), 3, blinkNow ? 1 : 2, P.eye);
+  } else if (t.eyes === "visor") {
+    px(8, eyY + 1, 8, blinkNow ? 1 : 2, P.eye);
+  } else {
+    px(8, eyY, 2, 2, P.eye); px(14, eyY, 2, 2, P.eye);
+    px(8, eyY, 1, 1, P.face); px(14, eyY, 1, 1, P.face);
+  }
+
+  // mouth
+  const my = hy + 8;
+  if (t.mouth === "line") px(10, my, 4, 1, P.acc);
+  else if (t.mouth === "grill") { px(9, my, 1, 1, P.acc); px(11, my, 1, 1, P.acc); px(13, my, 1, 1, P.acc); }
+  else if (t.mouth === "smile") { px(9, my, 1, 1, P.acc); px(10, my + 1, 4, 1, P.acc); px(14, my, 1, 1, P.acc); }
+
+  // rig detail
+  if (t.rig === "bolts") { px(hx - 1, hy + 4, 1, 2, P.shell); px(hx + hw, hy + 4, 1, 2, P.shell); }
+  else if (t.rig === "vents") { for (let i = 0; i < 3; i++) px(hx + 2, hy + hh - 2 + 0, 1, 0, P.acc); px(hx + 2 + i * 2, hy + hh - 2, 1, 1, P.acc); }
+  else if (t.rig === "halo") {
+    ctx.fillStyle = P.acc;
+    const r = 9.5 + Math.sin(tMs / 800) * 0.4;
+    for (let a = 0; a < 24; a++) {
+      const ang = a / 24 * Math.PI * 2;
+      const x = Math.round(12 + Math.cos(ang) * r), y = Math.round(11 + Math.sin(ang) * (r * 0.55) - 7);
+      if (x >= 0 && x < 24 && y >= 0 && y < 24) ctx.fillRect(x, y + bob, 1, 1);
+    }
+  }
+
+  // cap
+  if (t.cap) { px(hx + 3, hy - 1, hw - 6, 1, P.acc); px(hx + 4, hy - 2, hw - 8, 1, P.acc); }
+}
+
+let pfpRaf = null, pfpId = 1;
+function animatePfp(tokenId) {
+  pfpId = tokenId;
+  const c = $("pfp"), ctx = c.getContext("2d");
+  ctx.imageSmoothingEnabled = false;
+  const loop = () => { drawBot(ctx, pfpId, performance.now()); pfpRaf = requestAnimationFrame(loop); };
+  if (pfpRaf) cancelAnimationFrame(pfpRaf);
+  loop();
+}
+
+/* --------------------------- stream canvas ------------------------- */
+const stream = $("stream"), sctx = stream.getContext("2d");
+let streamRaf = null;
+function streamLoop(ts) {
+  const W = stream.width, H = stream.height;
+  sctx.fillStyle = "rgba(6,8,10,.28)";
+  sctx.fillRect(0, 0, W, H);
+  const cols = 44, rows = 13;
+  const cw = W / cols, ch = H / rows;
+  sctx.font = Math.round(ch * 0.86) + "px ui-monospace,monospace";
+  for (let i = 0; i < 26; i++) {
+    const x = Math.floor(Math.random() * cols);
+    const y = Math.floor(Math.random() * rows);
+    sctx.fillStyle = Math.random() < 0.18 ? "rgba(70,224,176,.42)" : "rgba(70,224,176,.12)";
+    sctx.fillText("0123456789abcdef"[Math.floor(Math.random() * 16)], x * cw, y * ch);
+  }
+  if (S.phase === "hit" || S.phase === "minted") {
+    // draw the revealed bot big in the center of the stream
+    const size = Math.floor(Math.min(W, H) * 0.62);
+    const x0 = Math.floor((W - size) / 2), y0 = Math.floor((H - size) / 2);
+    sctx.save();
+    sctx.translate(x0, y0);
+    sctx.scale(size / 24, size / 24);
+    sctx.imageSmoothingEnabled = false;
+    drawBot(sctx, pfpId, performance.now());
+    sctx.restore();
+  }
+  streamRaf = requestAnimationFrame(streamLoop);
+}
+
+/* ------------------------------- misc ------------------------------ */
+function log(text, cls) {
+  const d = document.createElement("div");
+  const ts = new Date().toLocaleTimeString("en-GB", { hour12: false });
+  d.innerHTML = '<span style="color:#414952">[' + ts + "]</span> " +
+    (cls ? '<span class="' + cls + '">' + text + "</span>" : text);
+  $("log").appendChild(d);
+  $("log").scrollTop = $("log").scrollHeight;
+  while ($("log").childElementCount > 120) $("log").removeChild($("log").firstChild);
+}
+function msg(id, html, cls) {
+  const el = $(id);
+  el.innerHTML = html;
+  el.className = "msg show" + (cls ? " " + cls : "");
+}
+
+/* ------------------------------ wiring ----------------------------- */
+$("connectBtn").addEventListener("click", connect);
+$("armBtn").addEventListener("click", arm);
+$("mintBtn").addEventListener("click", mint);
+$("checkBtn").addEventListener("click", checkRedeem);
+$("redeemBtn").addEventListener("click", doRedeem);
+
+if (eth()) {
+  eth().on?.("accountsChanged", (a) => {
+    S.account = a[0] || null;
+    if (!S.account) location.reload();
+    else { $("connectBtn").textContent = short(S.account); log("wallet switched " + short(S.account), "ok"); resume(); }
+  });
+  eth().on?.("chainChanged", () => location.reload());
+}
+
+/* boot */
+renderSupply(0);
+drawBot($("pfp").getContext("2d"), 1, performance.now());
+animatePfp(1);                      // idle: show bot #1 animating in the claim card
+streamLoop(0);
+loadSupply();
+log(CONFIG.contract ? "contract linked " + CONFIG.contract : "contract not deployed · rig runs in preview mode", CONFIG.contract ? "ok" : "");
+$("pfp").classList.remove("armed");
+</script>
+</body>
+</html>
