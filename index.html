@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>OREBOT — agent-native token on BNB Chain</title>
+<meta name="description" content="OREBOT is an autonomous onchain agent's token on BNB Chain, launched on Flap and gated by Binance Agent ID. 1% buy / 1% sell tax. 2% per-wallet buy cap." />
+<meta property="og:title" content="OREBOT — agent-native token on BNB Chain" />
+<meta property="og:description" content="Agent ID gated launch on Flap. 1%/1% tax. Only verified agents trade the curve." />
+<meta property="og:type" content="website" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230b0d10'/%3E%3Ccircle cx='16' cy='16' r='7' fill='none' stroke='%2346e0b0' stroke-width='3'/%3E%3Ccircle cx='16' cy='16' r='2.5' fill='%2346e0b0'/%3E%3C/svg%3E" />
+<style>
+  :root{
+    --bg:#08090b; --surface:#0e1014; --surface-2:#12151a; --line:#1e232b;
+    --text:#e9ecef; --muted:#8a919c; --dim:#5c636e;
+    --accent:#46e0b0; --accent-dim:rgba(70,224,176,.12);
+    --warn:#ffc46b;
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+    --r:14px; --max:1120px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;line-height:1.55;
+    background-image:radial-gradient(760px 420px at 50% -180px,rgba(70,224,176,.10),transparent 70%);
+  }
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:var(--max);margin:0 auto;padding:0 22px}
+  .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+  /* nav */
+  header{position:sticky;top:0;z-index:20;backdrop-filter:blur(12px);background:rgba(8,9,11,.78);border-bottom:1px solid var(--line)}
+  .nav{display:flex;align-items:center;gap:18px;height:64px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:650;letter-spacing:.02em}
+  .brand svg{display:block}
+  .nav-links{display:flex;gap:22px;margin-left:auto;font-size:14px;color:var(--muted)}
+  .nav-links a:hover{color:var(--text)}
+  .nav .btn{margin-left:4px}
+  @media(max-width:820px){.nav-links{display:none}}
+
+  /* buttons */
+  .btn{display:inline-flex;align-items:center;gap:8px;border-radius:10px;padding:10px 16px;font-size:14px;font-weight:600;border:1px solid var(--line);background:var(--surface);color:var(--text);cursor:pointer;transition:.16s ease}
+  .btn:hover{border-color:#2b313a;background:var(--surface-2)}
+  .btn-primary{background:var(--accent);color:#04120d;border-color:transparent}
+  .btn-primary:hover{background:#5eeabb;border-color:transparent}
+  .btn-primary[aria-disabled="true"]{background:var(--surface-2);color:var(--dim);cursor:not-allowed;border-color:var(--line)}
+  .btn-sm{padding:8px 12px;font-size:13px}
+
+  /* hero */
+  .hero{padding:72px 0 44px}
+  .eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);background:var(--accent-dim);border:1px solid rgba(70,224,176,.22);padding:6px 12px;border-radius:999px}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px rgba(70,224,176,.16)}
+  h1{font-size:clamp(46px,8vw,84px);line-height:.98;letter-spacing:-.035em;margin:22px 0 0;font-weight:700}
+  h1 .tick{display:block;font-size:clamp(13px,1.6vw,16px);letter-spacing:.42em;color:var(--dim);font-family:var(--mono);font-weight:500;margin-top:16px}
+  .lede{max-width:620px;color:var(--muted);font-size:17px;margin:22px 0 0}
+  .hero-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px;align-items:center}
+  .ca{display:flex;align-items:center;gap:10px;margin-top:22px;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:8px 8px 8px 14px;font-size:13px;color:var(--muted);max-width:100%}
+  .ca code{font-family:var(--mono);font-size:12.5px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .ca .copy{border:1px solid var(--line);background:var(--surface-2);color:var(--muted);border-radius:7px;padding:5px 10px;font-size:12px;cursor:pointer;font-family:var(--mono)}
+  .ca .copy:hover{color:var(--text)}
+
+  /* sections */
+  section{padding:36px 0}
+  .sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:20px}
+  .sec-head h2{font-size:20px;margin:0;letter-spacing:-.01em;font-weight:640}
+  .sec-head span{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+
+  /* stats */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  @media(max-width:900px){.stats{grid-template-columns:repeat(2,1fr)}}
+  .tile{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px 18px 16px}
+  .tile .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--dim)}
+  .tile .v{font-size:26px;font-weight:640;letter-spacing:-.02em;margin-top:10px;font-family:var(--mono);font-variant-numeric:tabular-nums}
+  .tile .s{font-size:12.5px;color:var(--muted);margin-top:5px}
+  .bar{height:6px;border-radius:99px;background:var(--surface-2);border:1px solid var(--line);margin-top:12px;overflow:hidden}
+  .bar i{display:block;height:100%;width:0%;background:linear-gradient(90deg,#2fae89,var(--accent));transition:width .5s ease}
+  .status{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--warn);background:rgba(255,196,107,.10);border:1px solid rgba(255,196,107,.25);padding:4px 10px;border-radius:999px}
+  .status.live{color:var(--accent);background:var(--accent-dim);border-color:rgba(70,224,176,.25)}
+
+  /* generic grid cards */
+  .grid{display:grid;gap:12px}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  @media(max-width:900px){.g3{grid-template-columns:1fr}.g2{grid-template-columns:1fr}}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px}
+  .card h3{margin:0 0 8px;font-size:15px;font-weight:640;letter-spacing:-.01em}
+  .card p{margin:0;color:var(--muted);font-size:14px}
+  .card .small{font-family:var(--mono);font-size:12px;color:var(--dim);margin-top:10px}
+
+  /* tokenomics list */
+  .kv{display:grid;grid-template-columns:repeat(2,1fr);gap:0 26px}
+  @media(max-width:760px){.kv{grid-template-columns:1fr}}
+  .kv .row{display:flex;justify-content:space-between;gap:16px;padding:13px 0;border-bottom:1px solid var(--line);font-size:14px}
+  .kv .row:last-child,.kv .row:nth-last-child(2){border-bottom:0}
+  .kv .row b{font-weight:600;font-family:var(--mono);font-size:13.5px}
+  .kv .row span{color:var(--muted)}
+  .split{display:flex;height:34px;border-radius:9px;overflow:hidden;border:1px solid var(--line);margin-top:6px}
+  .split div{display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;color:#04120d;background:var(--accent);font-weight:700;letter-spacing:.04em}
+  .split div.muted{background:#2a3038;color:var(--muted)}
+
+  /* steps */
+  ol.steps{list-style:none;counter-reset:s;padding:0;margin:0;display:grid;gap:10px}
+  ol.steps li{counter-increment:s;position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px 18px 60px}
+  ol.steps li::before{content:counter(s,decimal-leading-zero);position:absolute;left:20px;top:17px;font-family:var(--mono);font-size:12px;color:var(--accent);letter-spacing:.06em}
+  ol.steps li b{display:block;font-size:14.5px;margin-bottom:4px}
+  ol.steps li p{margin:0;color:var(--muted);font-size:13.5px}
+  .note{border-left:2px solid var(--warn);background:rgba(255,196,107,.06);padding:14px 18px;border-radius:0 10px 10px 0;color:#d8c39d;font-size:13.5px;margin-top:14px}
+
+  /* footer */
+  footer{border-top:1px solid var(--line);margin-top:36px;padding:30px 0 46px;color:var(--dim);font-size:12.5px}
+  .foot{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between}
+  .foot a{color:var(--muted)}
+  .foot a:hover{color:var(--text)}
+  .disclaimer{margin-top:18px;max-width:760px;line-height:1.6;color:#5c636e}
+  .flash{position:fixed;bottom:22px;left:50%;transform:translate(-50%,20px);background:var(--accent);color:#04120d;font-weight:650;font-size:13px;padding:9px 16px;border-radius:99px;opacity:0;transition:.22s ease;pointer-events:none}
+  .flash.on{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="#top">
+      <svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#0e1014" stroke="#1e232b"/><circle cx="16" cy="16" r="7.5" fill="none" stroke="#46e0b0" stroke-width="2.5"/><circle cx="16" cy="16" r="2.6" fill="#46e0b0"/></svg>
+      <span>OREBOT</span>
+    </a>
+    <nav class="nav-links">
+      <a href="#dashboard">Dashboard</a>
+      <a href="#tokenomics">Tokenomics</a>
+      <a href="#gate">Agent ID</a>
+      <a href="#buy">How to buy</a>
+    </nav>
+    <a class="btn btn-primary btn-sm" id="navBuy" href="#buy">Get OREBOT</a>
+  </div>
+</header>
+
+<main id="top">
+  <div class="wrap hero">
+    <span class="eyebrow"><span class="dot"></span><span id="eyebrowText">Pre-launch · Flap · BNB Chain</span></span>
+    <h1>Orebot<span class="tick">$OREBOT</span></h1>
+    <p class="lede">The token of an autonomous trading agent. Launched on Flap and gated by <strong>Binance Agent ID</strong> — only verified agents can touch the curve, and no wallet can hold more than 2% of supply off the launch.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" id="buyBtn" href="#buy" aria-disabled="true">Launching soon</a>
+      <a class="btn" id="chartBtn" href="https://flap.sh/bnb" target="_blank" rel="noopener">View on Flap</a>
+      <a class="btn" href="https://x.com/orebot_network" target="_blank" rel="noopener">@orebot_network</a>
+    </div>
+    <div class="ca">
+      <span class="mono" style="font-size:11px;letter-spacing:.12em;color:var(--dim)">CA</span>
+      <code id="caText">pending launch</code>
+      <button class="copy" id="copyCa" type="button">copy</button>
+    </div>
+  </div>
+
+  <section id="dashboard" class="wrap">
+    <div class="sec-head"><h2>Live dashboard</h2><span id="dashStatus">—</span></div>
+    <div class="stats">
+      <div class="tile">
+        <div class="k">Price</div>
+        <div class="v" id="statPrice">—</div>
+        <div class="s" id="statPriceSub">BNB per OREBOT</div>
+      </div>
+      <div class="tile">
+        <div class="k">Market cap</div>
+        <div class="v" id="statMcap">—</div>
+        <div class="s" id="statMcapSub">fully diluted</div>
+      </div>
+      <div class="tile">
+        <div class="k">Curve filled</div>
+        <div class="v" id="statProgress">—</div>
+        <div class="bar"><i id="progressBar"></i></div>
+      </div>
+      <div class="tile">
+        <div class="k">Bonding reserve</div>
+        <div class="v" id="statReserve">—</div>
+        <div class="s">BNB on the curve</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="about" class="wrap">
+    <div class="sec-head"><h2>What OREBOT is</h2><span>thesis</span></div>
+    <div class="grid g3">
+      <div class="card">
+        <h3>An agent, not a mascot</h3>
+        <p>Orebot runs 24/7: it watches wallets across Base and Solana, tracks market data and executes its own trades. The token is the onchain handle for that agent on BNB Chain.</p>
+      </div>
+      <div class="card">
+        <h3>Agent-gated from block one</h3>
+        <p>The launch uses Flap's Agent ID extension. Buying or selling on the curve requires holding a Binance Agent ID, and every origin is capped at 2% of supply.</p>
+      </div>
+      <div class="card">
+        <h3>Tax funds the machine</h3>
+        <p>1% on buys and 1% on sells for the whole tax window. Revenue routes to the project treasury that pays for the agent's data feeds, RPC and execution.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="tokenomics" class="wrap">
+    <div class="sec-head"><h2>Tokenomics</h2><span>fixed at launch</span></div>
+    <div class="grid g2">
+      <div class="card">
+        <h3>Parameters</h3>
+        <div class="kv">
+          <div class="row"><span>Total supply</span><b>1,000,000,000</b></div>
+          <div class="row"><span>Quote asset</span><b>BNB</b></div>
+          <div class="row"><span>Buy tax</span><b>1%</b></div>
+          <div class="row"><span>Sell tax</span><b>1%</b></div>
+          <div class="row"><span>Tax duration</span><b>100 years</b></div>
+          <div class="row"><span>Anti-farmer</span><b>3 days</b></div>
+          <div class="row"><span>Per-wallet buy cap</span><b>2% (20M)</b></div>
+          <div class="row"><span>Dev buy</span><b>2% at launch</b></div>
+          <div class="row"><span>Standard</span><b>Flap Tax Token V3</b></div>
+          <div class="row"><span>Graduation</span><b>80% of curve</b></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Where the tax goes</h3>
+        <p>Every point of tax is split at a fixed ratio, hard-coded at launch.</p>
+        <div class="split" style="margin-top:16px">
+          <div style="width:100%">TREASURY 100%</div>
+        </div>
+        <div class="small">mkt 10000 bps · deflation 0 · dividend 0 · LP 0</div>
+        <p style="margin-top:18px">On graduation, liquidity is seeded to the DEX and the LP tokens are sent to the dead address. The tax clock keeps running for its full window, then the token behaves like a standard ERC-20.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="gate" class="wrap">
+    <div class="sec-head"><h2>The Agent ID gate</h2><span>who can trade</span></div>
+    <div class="grid g2">
+      <div class="card">
+        <h3>Only verified agents trade the curve</h3>
+        <p>The launch is created with Flap's <span class="mono">nft_gated.v1</span> extension pointing at the Binance Agent ID collection. Swaps check the ERC-721 balance of <span class="mono">tx.origin</span>: less than one Agent ID and the trade reverts with <span class="mono">NFTGatedOnly</span>.</p>
+        <div class="small">collection 0x60B9262456dE011F7d15a54CdD8c48bAaa8B022F</div>
+        <p style="margin-top:16px">The gate applies to the launch curve only. Once the token graduates to the DEX, anyone can trade it.</p>
+      </div>
+      <div class="card">
+        <h3>Why gate it at all</h3>
+        <p>Snipers and bot swarms are the main reason agent tokens die on day one. A gate plus a 2% per-wallet cap means the early curve is filled by wallets that proved they are agents, not by a fresh address per millisecond.</p>
+        <p style="margin-top:16px;color:var(--warn)">Note: a buyer below the cap fills up to it and gets the excess refunded in the same transaction. Above the cap, the buy reverts.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="buy" class="wrap">
+    <div class="sec-head"><h2>How to buy</h2><span>4 steps</span></div>
+    <ol class="steps">
+      <li><b>Get a Binance Agent ID</b><p>Open the Binance app, start Binance AI Pro, create an Agentic Wallet and claim a <span class="mono">.ai</span> name. The Agent ID NFT lands in that wallet and is your ticket to the curve.</p></li>
+      <li><b>Fund the wallet with BNB</b><p>You need BNB for the buy plus a little gas. Keep it on BNB Smart Chain (chain ID 56).</p></li>
+      <li><b>Buy on Flap</b><p>Open the OREBOT page on Flap and swap BNB for OREBOT. Remember the 2% per-wallet cap on every buy while the token is on the curve.</p></li>
+      <li><b>Verify before you sign</b><p>Check the contract address matches the one on this page, and check that <span class="mono">nftGate</span> on the token equals the Agent ID collection. Anything else is not OREBOT.</p></li>
+    </ol>
+    <div class="note">The Agent ID check reads the wallet that signs the transaction, not the wallet that holds the tokens. Sending OREBOT to a wallet without an Agent ID is fine — that wallet just cannot sell on the curve.</div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <span class="mono">OREBOT · BNB CHAIN</span>
+      <div style="display:flex;gap:18px;flex-wrap:wrap">
+        <a href="https://x.com/orebot_network" target="_blank" rel="noopener">X / @orebot_network</a>
+        <a id="bscLink" href="#" target="_blank" rel="noopener" style="display:none">BscScan</a>
+        <a href="https://flap.sh" target="_blank" rel="noopener">Flap</a>
+        <a href="#gate">Agent ID gate</a>
+      </div>
+    </div>
+    <p class="disclaimer">OREBOT is a memecoin-style community token with a 1% buy and 1% sell tax. It is not a security, not an investment product and carries no promise of return or buyback. Nothing here is financial advice. Orebot is an independent project and is not affiliated with, endorsed by, or sponsored by Binance or SPACE ID; "Binance Agent ID" refers only to the third-party NFT collection used as a trading gate. Contract addresses are published on this page — always verify before trading.</p>
+  </div>
+</footer>
+
+<div class="flash" id="flash">copied</div>
+
+<script>
+/* ------------------------------------------------------------------
+   CONFIG — set tokenAddress after launch (predicted with the mined salt)
+   ------------------------------------------------------------------ */
+const CONFIG = {
+  tokenAddress: "0xDf5b8b780fc9B9141BC0A814d81e9f9e3c4D7777", // predicted CREATE2 address
+  portal:       "0xe2cE6ab80874Fa9Fa2aAE65D277Dd6B8e65C9De0",
+  rpc:          "https://bsc-dataseed.binance.org",
+  supply:       1_000_000_000,
+  flapUrl:      "https://flap.sh/bnb"
+};
+
+const $ = (id) => document.getElementById(id);
+const flash = (msg) => { const f = $("flash"); f.textContent = msg; f.classList.add("on"); setTimeout(()=>f.classList.remove("on"), 1400); };
+
+/* copy contract address */
+$("copyCa").addEventListener("click", async () => {
+  const v = $("caText").textContent.trim();
+  if (!/^0x[0-9a-fA-F]{40}$/.test(v)) return flash("no address yet");
+  try { await navigator.clipboard.writeText(v); flash("address copied"); }
+  catch { flash("copy failed"); }
+});
+
+function fmt(n, d = 2) {
+  if (!isFinite(n)) return "—";
+  if (n >= 1e9) return (n/1e9).toFixed(d) + "B";
+  if (n >= 1e6) return (n/1e6).toFixed(d) + "M";
+  if (n >= 1e3) return (n/1e3).toFixed(d) + "K";
+  return n.toFixed(d);
+}
+function fmtPrice(n) {
+  if (!isFinite(n) || n === 0) return "—";
+  if (n >= 0.01) return n.toFixed(4);
+  if (n >= 1e-6) return n.toFixed(8);
+  return n.toExponential(3).replace("e", "e");
+}
+
+async function rpcCall(method, params) {
+  const r = await fetch(CONFIG.rpc, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params })
+  });
+  const j = await r.json();
+  if (j.error) throw new Error(j.error.message || "rpc error");
+  return j.result;
+}
+
+const wordSafe = (hex, i) => BigInt("0x" + hex.slice(2 + i * 64, 2 + (i + 1) * 64));
+
+async function bnbPriceUsd() {
+  try {
+    const r = await fetch("https://api.binance.com/api/v3/ticker/price?symbol=BNBUSDT");
+    const j = await r.json();
+    return parseFloat(j.price);
+  } catch { return null; }
+}
+
+function setLive(isLive) {
+  $("dashStatus").textContent = isLive ? "live · chain 56" : "pre-launch";
+  $("eyebrowText").textContent = isLive ? "Live · Flap · BNB Chain" : "Pre-launch · Flap · BNB Chain";
+  if (isLive) {
+    $("buyBtn").removeAttribute("aria-disabled");
+    $("buyBtn").textContent = "Buy on Flap";
+    $("buyBtn").href = CONFIG.flapUrl + "/" + CONFIG.tokenAddress;
+    $("buyBtn").target = "_blank";
+    $("buyBtn").rel = "noopener";
+    $("caText").textContent = CONFIG.tokenAddress;
+    const bl = $("bscLink");
+    bl.href = "https://bscscan.com/token/" + CONFIG.tokenAddress;
+    bl.style.display = "inline";
+  }
+}
+
+async function loadStats() {
+  if (!/^0x[0-9a-fA-F]{40}$/.test(CONFIG.tokenAddress)) return setLive(false);
+  let code;
+  try { code = await rpcCall("eth_getCode", [CONFIG.tokenAddress, "latest"]); }
+  catch { return setLive(false); }
+  if (!code || code === "0x") return setLive(false); // not deployed yet
+
+  setLive(true);
+  try {
+    const data = "0x62fafcca" + CONFIG.tokenAddress.slice(2).toLowerCase().padStart(64, "0");
+    const res = await rpcCall("eth_call", [{ to: CONFIG.portal, data }, "latest"]);
+    // (status, reserve, circulatingSupply, price, tokenVersion, r, h, k, dexSupplyThresh,
+    //  quoteTokenAddress, nativeToQuoteSwapEnabled, extensionID, buyTaxRate, sellTaxRate,
+    //  pool, progress, lpFeeProfile, dexId)
+    const reserve  = Number(wordSafe(res, 1)) / 1e18;
+    const circ     = Number(wordSafe(res, 2)) / 1e18;
+    const priceBnb = Number(wordSafe(res, 3)) / 1e18;
+    const thresh   = Number(wordSafe(res, 8)) / 1e18;
+    const usd      = await bnbPriceUsd();
+
+    $("statPrice").textContent = fmtPrice(priceBnb);
+    $("statPriceSub").textContent = usd ? "≈ $" + (priceBnb * usd).toPrecision(3) : "BNB per OREBOT";
+
+    const mcapBnb = priceBnb * CONFIG.supply;
+    $("statMcap").textContent = usd ? "$" + fmt(mcapBnb * usd) : fmt(mcapBnb) + " BNB";
+    $("statMcapSub").textContent = fmt(mcapBnb) + " BNB FDV";
+
+    const pct = thresh > 0 ? Math.min(100, (circ / thresh) * 100) : 0;
+    $("statProgress").textContent = pct.toFixed(1) + "%";
+    $("progressBar").style.width = pct.toFixed(1) + "%";
+    $("statReserve").textContent = reserve.toFixed(4);
+  } catch (e) {
+    console.warn("stats unavailable", e);
+  }
+}
+
+loadStats();
+setInterval(loadStats, 30000);
+</script>
+</body>
+</html>
