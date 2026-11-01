@@ -1,4 +1,4 @@
-# AGENTS.md — OREBOT project context
+# AGENTS.md - OREBOT project context
 
 Read this before touching anything. It is the build plan and the state of the world as of
 **2026-11-01**. Facts marked VERIFIED were read from BNB Chain, not inferred. Never trust a number
@@ -12,8 +12,8 @@ Two products that share one identity gate:
 
 | Layer | Artifact | State |
 |---|---|---|
-| Token | **OREBOT** — Flap Tax Token V3 on BNB Chain, Agent ID gated | not launched |
-| NFT | **OrebotPFP** — 1,000 pixel-bot PFPs, mined then burned for OREBOT | source ready, not deployed |
+| Token | **OREBOT** - Flap Tax Token V3 on BNB Chain, Agent ID gated | not launched |
+| NFT | **OrebotPFP** - 1,000 pixel-bot PFPs, mined then burned for OREBOT | source ready, not deployed |
 | Site | token landing page + mining rig | live on GitHub Pages |
 
 Owner: Luwei (crypto trader, timezone Asia/Rangoon). Public handle `@orebot_network`.
@@ -112,12 +112,12 @@ the step you are on, not all at once.
 
 ## 6. NFT rig: contract, gas, and redemption economics
 
-`contracts/OrebotPFP.sol` — ERC-721 + Ownable + ReentrancyGuard (OZ 5.0.2), solc 0.8.24, optimizer 200.
+`contracts/OrebotPFP.sol` - ERC-721 + Ownable + ReentrancyGuard (OZ 5.0.2), solc 0.8.24, optimizer 200.
 
 - 1,000 supply, `MINT_PRICE = 0.001 ether`, `feeReceiver` **immutable** so mint payments land in the
   project wallet inside the same transaction that mints. No withdrawal function, no pause.
 - Tier rolled onchain in `mint()`: ultimate 3%, epic 12%, rare 25%, common 60%.
-- `redeem(tokenId)` burns the NFT and emits `Redeemed(tokenId, holder, tier, reward)` — one-time by
+- `redeem(tokenId)` burns the NFT and emits `Redeemed(tokenId, holder, tier, reward)` - one-time by
   construction. Payouts are not onchain yet: they need OREBOT plus a distributor that reads those
   events.
 - `msg.sender == tx.origin` in `mint()` blocks atomic re-roll contracts. Residual risk: a minter
@@ -129,7 +129,7 @@ the step you are on, not all at once.
   deposit (7,750 × 200).
 - Redemption economics: expected 40,500 OREBOT per bot, so **40.5M total across all 1,000 = 4.05% of
   the 1B supply**; ~30 ultimates expected, not 300. Reserve **50M OREBOT** in the distributor.
-  Absolute worst case (all ultimate) is 500M — cap ultimate mints if that risk is unacceptable.
+  Absolute worst case (all ultimate) is 500M - cap ultimate mints if that risk is unacceptable.
 
 ## 7. Front-end facts an agent will need
 
@@ -149,7 +149,7 @@ selectors are hardcoded and were computed, not remembered:
 `0.001 BNB` as hex value is `0x38d7ea4c68000`. Set `CONFIG.contract` to turn minting on; until then
 the rig runs in preview mode. Mining window is 5–10 min, random per session, persisted under
 `localStorage` key `orebot.mine.v1.<wallet>`, so a refresh resumes instead of re-rolling.
-The rig animation is presentation — say so in any user-facing copy.
+The rig animation is presentation - say so in any user-facing copy.
 
 ## 8. The merge design (agreed direction, not yet implemented)
 
@@ -164,7 +164,7 @@ Hard constraint: Flap's `nft_gated` checks a collection **Flap** has whitelisted
 
 ## 9. Order of operations
 
-1. Get `haku85.ai` into the launch wallet (`0x0Bee…47A8`) — it currently sits in the Binance
+1. Get `haku85.ai` into the launch wallet (`0x0Bee…47A8`) - it currently sits in the Binance
    Agentic Wallet and `balanceOf` for both our wallets is **0** (VERIFIED 2026-11-01).
 2. Fund `0x0Bee…47A8` with ~0.15 BNB (0.117 dev buy + gas + margin).
 3. Upload artwork/description, then launch via `newTokenV6` with the salt above.
