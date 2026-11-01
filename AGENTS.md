@@ -42,7 +42,8 @@ account currently has 4 projects and **none of them is this project**.
 
 | Name | Address |
 |---|---|
-| Project EVM wallet (fee receiver, launch wallet, deployer) | `0x0Bee61D45d42D7342D57Ea7581D17581203447A8` |
+| NFT mint fee receiver (set at deploy, immutable) | `0xdAc8133DDf95dE0d0a35F711f5348b1d709ed35f` |
+| Project EVM wallet (launch wallet, contract deployer) | `0x0Bee61D45d42D7342D57Ea7581D17581203447A8` |
 | BSC bounty claim wallet (user-held, no sandbox key) | `0xAB39Aa1e2db4036e01CF7e919b3f239b3ff90160` |
 | Predicted OREBOT token address (from mined salt) | `0xDf5b8b780fc9B9141BC0A814d81e9f9e3c4D7777` |
 | Binance Agent ID collection (SPACE ID Agent ID, symbol `AI`) | `0x60B9262456dE011F7d15a54CdD8c48bAaa8B022F` |
@@ -114,8 +115,10 @@ the step you are on, not all at once.
 
 `contracts/OrebotPFP.sol` - ERC-721 + Ownable + ReentrancyGuard (OZ 5.0.2), solc 0.8.24, optimizer 200.
 
-- 1,000 supply, `MINT_PRICE = 0.001 ether`, `feeReceiver` **immutable** so mint payments land in the
-  project wallet inside the same transaction that mints. No withdrawal function, no pause.
+- 1,000 supply, `MINT_PRICE = 0.001 ether`, `feeReceiver` **immutable**, set to
+  `0xdAc8133DDf95dE0d0a35F711f5348b1d709ed35f` in the constructor, so mint payments land there inside
+  the same transaction that mints. No withdrawal function, no pause. Changing it after deploy means
+  redeploying.
 - Tier rolled onchain in `mint()`: ultimate 3%, epic 12%, rare 25%, common 60%.
 - `redeem(tokenId)` burns the NFT and emits `Redeemed(tokenId, holder, tier, reward)` - one-time by
   construction. Payouts are not onchain yet: they need OREBOT plus a distributor that reads those
