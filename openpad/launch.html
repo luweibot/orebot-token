@@ -111,6 +111,7 @@ const $ = (id) => document.getElementById(id);
 const FEE_WEI = "0x" + (5n * 10n ** 13n).toString(16); // 0.00005 ETH
 const TREASURY = "0x0Bee61D45d42D7342D57Ea7581D17581203447A8";
 const FN_URL = "https://velo-724d8024.base44.app/functions/openpadLaunchRequest";
+const STATUS_URL = "https://velo-724d8024.base44.app/functions/openpadLaunchStatus";
 
 const PRESETS = {
   standard: { startMcapUsd: 100000, endMcapUsd: 10000000, numTokensToSell: "850000000", days: 7, share: "50%" },
@@ -190,6 +191,43 @@ function validate() {
   return null;
 }
 
+function showResult(out, payload, hash) {
+  const label = out.status === "launched" ? "Launched" : out.status === "failed" ? "Failed" : "Launching";
+  const rows = [
+    ["Status", label],
+    ["Token", payload.tokenSymbol + " · " + payload.tokenName],
+  ];
+  const token = out.token || out.tokenAddress;
+  if (token) rows.push(["Token address", `<a href="https://basescan.org/token/${token}" target="_blank" rel="noopener">${token}</a>`]);
+  const tx = out.tx || out.launchTxHash;
+  if (tx) rows.push(["Launch tx", `<a href="https://basescan.org/tx/${tx}" target="_blank" rel="noopener">${tx.slice(0, 18)}…</a>`]);
+  if (hash) rows.push(["Payment", `<a href="https://basescan.org/tx/${hash}" target="_blank" rel="noopener">${hash.slice(0, 18)}…</a>`]);
+  rows.push(["Request", out.id]);
+  if (out.error) rows.push(["Error", out.error]);
+  $("result").innerHTML = rows.map(([k, v]) => `<div class="row"><span>${k}</span><span>${v}</span></div>`).join("");
+}
+
+function poll(id) {
+  let n = 0;
+  const t = setInterval(async () => {
+    n++;
+    if (n > 40) return clearInterval(t);
+    try {
+      const r = await fetch(STATUS_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
+      const s = await r.json();
+      if (!s.ok) return;
+      if (s.status === "launched" || s.status === "failed") {
+        clearInterval(t);
+        showResult(s, { tokenSymbol: s.tokenSymbol, tokenName: s.tokenName }, "");
+        $("status").innerHTML = s.status === "launched"
+          ? '<span class="ok">Launched.</span> Your token is live on Base.'
+          : '<span class="bad">Launch failed.</span> ' + (s.error || "");
+        $("submit").disabled = false;
+      }
+    } catch (_) {}
+  }, 6000);
+}
+
 $("submit").onclick = async () => {
   const err = validate();
   if (err) return ($("status").innerHTML = '<span class="bad">' + err + "</span>");
@@ -219,14 +257,16 @@ $("submit").onclick = async () => {
     const out = await res.json();
     if (!out.ok) throw new Error(out.error || "submission rejected");
     $("resultPanel").classList.remove("hide");
-    $("result").innerHTML = [
-      ["Status", "Queued for launch"],
-      ["Request", out.id],
-      ["Token", payload.tokenSymbol + " · " + payload.tokenName],
-      ["Payment", `<a href="https://basescan.org/tx/${hash}" target="_blank" rel="noopener">${hash.slice(0, 18)}…</a>`],
-      ["Next", "OpenPad launches it on Doppler within a few minutes. You get the token address here and in chat."],
-    ].map(([k, v]) => `<div class="row"><span>${k}</span><span>${v}</span></div>`).join("");
-    $("status").innerHTML = '<span class="ok">Paid and queued.</span> Your launch is in the queue.';
+    showResult(out, payload, hash);
+    if (out.status === "launched") {
+      $("status").innerHTML = '<span class="ok">Launched.</span> Your token is live on Base.';
+    } else if (out.status === "failed") {
+      $("status").innerHTML = '<span class="bad">Launch failed.</span> ' + (out.error || "see the reason above");
+      $("submit").disabled = false;
+    } else {
+      $("status").innerHTML = '<span class="ok">Paid.</span> Launching now, this page updates itself.';
+      poll(out.id);
+    }
   } catch (e) {
     $("status").innerHTML = '<span class="bad">' + (e.message || "something went wrong") + "</span>";
     $("submit").disabled = false;
