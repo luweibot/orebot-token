@@ -93,6 +93,23 @@
   </div>
 
   <div class="panel">
+    <h2>Hosted launch: we sign it for you</h2>
+    <p style="font-size:13px;color:var(--dim);margin:0 0 14px">
+      Do not want to sign the launch transaction yourself? Pay a flat <b>0.00005 ETH</b> creation fee to the OpenPad
+      treasury and we run the launch from our own wallet. You keep the token; OpenPad is the integrator and the
+      fee beneficiary. Cost is the same as signing it yourself, minus the wallet setup.
+    </p>
+    <div class="out" id="hostedinfo" style="margin-bottom:14px">Treasury: 0x0Bee61D45d42D7342D57Ea7581D17581203447A8
+Creation fee: 0.00005 ETH (covers ~0.000039 ETH of gas, the rest is the platform margin)</div>
+    <div class="actions" style="margin-top:0">
+      <button class="btn primary" id="hosted" disabled>Pay 0.00005 ETH and request launch</button>
+      <button class="btn" id="copy" disabled>Copy request</button>
+    </div>
+    <div class="note" id="hostedstatus"></div>
+    <div class="out hide" id="reqout" style="margin-top:12px"></div>
+  </div>
+
+  <div class="panel">
     <h2>Result</h2>
     <div id="result" class="out">Connect a wallet, fill in the token, then simulate.</div>
   </div>
@@ -155,6 +172,7 @@ $("connect").onclick = async () => {
     $("wallet").textContent = account.slice(0, 6) + "…" + account.slice(-4) + " on Base";
     $("simulate").disabled = false;
     $("launch").disabled = false;
+    $("hosted").disabled = false;
   } catch (e) {
     $("status").innerHTML = '<span class="bad">' + e.message + "</span>";
   }
@@ -207,6 +225,41 @@ $("launch").onclick = async () => {
   } finally {
     $("launch").disabled = false;
   }
+};
+
+let requestText = "";
+const FEE_WEI = "0x" + (5n * 10n ** 13n).toString(16); // 0.00005 ETH
+
+$("hosted").onclick = async () => {
+  const c = cfg();
+  const err = validate(c);
+  if (err) return ($("hostedstatus").innerHTML = '<span class="bad">' + err + "</span>");
+  $("hosted").disabled = true;
+  $("hostedstatus").textContent = "Confirm the 0.00005 ETH payment in your wallet…";
+  try {
+    const hash = await window.ethereum.request({
+      method: "eth_sendTransaction",
+      params: [{ from: account, to: window.OpenPad.INTEGRATOR, value: FEE_WEI }],
+    });
+    const preset = document.querySelector(".chip.on")?.dataset.preset || "custom";
+    requestText = JSON.stringify({
+      name: c.name, symbol: c.symbol, tokenURI: c.tokenURI, preset,
+      payer: account, txHash: hash,
+    }, null, 2);
+    $("reqout").classList.remove("hide");
+    $("reqout").textContent = requestText;
+    $("copy").disabled = false;
+    $("hostedstatus").innerHTML = '<span class="ok">Payment sent.</span> Copy the request below and send it to the agent to finish the launch.';
+  } catch (e) {
+    $("hostedstatus").innerHTML = '<span class="bad">' + (e.message || "payment cancelled") + "</span>";
+  } finally {
+    $("hosted").disabled = false;
+  }
+};
+
+$("copy").onclick = async () => {
+  try { await navigator.clipboard.writeText(requestText); $("hostedstatus").innerHTML = '<span class="ok">Copied.</span>'; }
+  catch { $("hostedstatus").textContent = "Copy failed, select the text manually."; }
 };
 </script>
 </body>
