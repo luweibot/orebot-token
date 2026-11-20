@@ -115,7 +115,7 @@
   <div class="stats">
     <div class="stat"><div class="k">Launches</div><div class="v" id="stat-launches">—</div></div>
     <div class="stat"><div class="k">Integrator fees accrued</div><div class="v" id="stat-fees">—</div></div>
-    <div class="stat"><div class="k">Platform share</div><div class="v">75<small>% of fees</small></div></div>
+    <div class="stat"><div class="k">Fee recipient</div><div class="v">Integrator<small>per swap</small></div></div>
     <div class="stat"><div class="k">Launch cost</div><div class="v">0.00004<small>ETH</small></div></div>
   </div>
 </div>
@@ -181,19 +181,20 @@
   <section>
     <div class="sec-head">
       <h2>Where the fee goes</h2>
-      <p>One fee per trade, paid in WETH, split inside the swap. Nobody has to sell the coin to get paid.</p>
+      <p>One fee per trade, paid in WETH, split inside the swap. Nobody has to sell the coin to get paid. The exact integrator cut is being measured on-chain.</p>
     </div>
     <table>
-      <thead><tr><th>Recipient</th><th>Share of a 1.00% trade fee</th><th>On $100k volume</th></tr></thead>
+      <thead><tr><th>Step</th><th>What happens</th><th>Set by</th></tr></thead>
       <tbody>
-        <tr><td>Protocol (Airlock)</td><td>5%</td><td>$50</td></tr>
-        <tr><td>Integrator (OpenPad)</td><td>75%</td><td>$750</td></tr>
-        <tr><td>Launcher / creator</td><td>20%</td><td>$200</td></tr>
+        <tr><td>1</td><td>Protocol fee leaves the swap for the Airlock</td><td>Doppler</td></tr>
+        <tr><td>2</td><td>Integrator share accrues to OpenPad, claimable in WETH</td><td>Doppler constant</td></tr>
+        <tr><td>3</td><td>Launcher share accrues to the creator wallet</td><td>Launch preset</td></tr>
       </tbody>
     </table>
     <p class="muted" style="font-size:12.5px;margin-top:14px">
-      The integrator cut is a protocol constant of the Doppler hook, so it is identical for every coin on OpenPad and
-      cannot be changed after a launch. Launcher shares are set per launch by the preset.
+      The integrator share is a protocol constant of the Doppler hook, identical for every coin on OpenPad and fixed
+      after launch. We are measuring its exact value from the first real trades rather than quoting a number we have
+      not verified, and will publish it here with the transaction that proves it.
     </p>
   </section>
 </div>
