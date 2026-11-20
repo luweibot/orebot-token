@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>OpenPad — launch a token</title>
+<style>
+  :root{--bg:#07090f;--panel:#0d1119;--line:#1c2333;--ink:#e8edf7;--dim:#8b97ad;--gold:#f2b544;--cyan:#39e6d0;--green:#4ade80;--red:#f87171;--mono:ui-monospace,Menlo,monospace}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,sans-serif;line-height:1.5}
+  a{color:var(--cyan);text-decoration:none}
+  .wrap{max-width:920px;margin:0 auto;padding:0 24px}
+  header{border-bottom:1px solid var(--line);background:rgba(7,9,15,.9);position:sticky;top:0;z-index:9}
+  .bar{display:flex;align-items:center;gap:20px;height:64px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;letter-spacing:-.02em}
+  .spacer{flex:1}
+  .btn{font:inherit;font-size:13px;padding:9px 16px;border-radius:10px;border:1px solid var(--line);background:#121826;color:var(--ink);cursor:pointer}
+  .btn:hover{border-color:#2b3650}
+  .btn.primary{background:var(--gold);border-color:var(--gold);color:#141005;font-weight:700}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  h1{font-size:34px;letter-spacing:-.03em;margin:44px 0 8px}
+  p.lede{color:var(--dim);margin:0 0 32px;font-size:15px;max-width:60ch}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px;margin-bottom:18px}
+  .panel h2{font-size:13px;text-transform:uppercase;letter-spacing:.14em;color:var(--dim);margin:0 0 16px;font-weight:600}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  label{display:block;font-size:12px;color:var(--dim);margin-bottom:6px}
+  input,select{width:100%;font:inherit;font-size:14px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:#0a0e16;color:var(--ink)}
+  input:focus,select:focus{outline:none;border-color:#33405c}
+  .presets{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+  .chip{font-size:13px;padding:8px 14px;border-radius:999px;border:1px solid var(--line);cursor:pointer;color:var(--dim)}
+  .chip.on{border-color:var(--gold);color:var(--gold);background:#1a1509}
+  .out{font-family:var(--mono);font-size:12.5px;white-space:pre-wrap;color:var(--dim);background:#0a0e16;border:1px solid var(--line);border-radius:12px;padding:16px;min-height:70px}
+  .out b{color:var(--ink);font-weight:600}
+  .row{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid #131a26;font-size:13px}
+  .row:last-child{border-bottom:none}
+  .row span:first-child{color:var(--dim)}
+  .row span:last-child{font-family:var(--mono);font-size:12.5px}
+  .actions{display:flex;gap:10px;margin-top:18px}
+  .note{font-size:12px;color:var(--dim);margin-top:12px}
+  .ok{color:var(--green)}.bad{color:var(--red)}
+  .hide{display:none}
+</style>
+</head>
+<body>
+<header><div class="wrap bar">
+  <div class="brand"><a href="./" style="color:inherit">← OpenPad</a></div>
+  <div class="spacer"></div>
+  <span id="wallet" class="note" style="margin:0">Not connected</span>
+  <button class="btn" id="connect">Connect wallet</button>
+</div></header>
+
+<div class="wrap">
+  <h1>Launch a token</h1>
+  <p class="lede">Everything is built in your browser and signed by your own wallet. OpenPad is set as the integrator,
+  which is the only thing the platform takes. Nothing is sent until you press Launch and approve it in your wallet.</p>
+
+  <div class="panel">
+    <h2>Preset</h2>
+    <div class="presets">
+      <div class="chip on" data-preset="standard">Standard</div>
+      <div class="chip" data-preset="wide">Wide auction</div>
+      <div class="chip" data-preset="custom">Custom</div>
+    </div>
+    <div class="grid">
+      <div><label>Name</label><input id="name" placeholder="FeeBot" /></div>
+      <div><label>Symbol</label><input id="symbol" placeholder="FEEBOT" /></div>
+      <div style="grid-column:1/-1"><label>Metadata URI (https)</label><input id="tokenURI" placeholder="https://…/token.json" /></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Sale</h2>
+    <div class="grid">
+      <div><label>Initial supply</label><input id="initialSupply" value="1000000000" /></div>
+      <div><label>Tokens for sale</label><input id="numTokensToSell" value="850000000" /></div>
+      <div><label>Start market cap (USD)</label><input id="startMcapUsd" value="10000000" /></div>
+      <div><label>End market cap (USD)</label><input id="endMcapUsd" value="100000" /></div>
+      <div><label>Swap fee (bps)</label><input id="fee" value="10000" /></div>
+      <div><label>Tick spacing</label><input id="tickSpacing" value="30" /></div>
+      <div><label>Auction days</label><input id="days" value="7" /></div>
+      <div><label>Epoch hours</label><input id="epochHours" value="12" /></div>
+      <div><label>Min proceeds (ETH)</label><input id="minProceedsEth" value="1.25" /></div>
+      <div><label>Max proceeds (ETH)</label><input id="maxProceedsEth" value="10" /></div>
+      <div><label>Fee lock (days)</label><input id="lockDays" value="365" /></div>
+      <div><label>Creator fee share</label><input id="ourShare" value="0.95" /></div>
+      <div><label>Dev buy (ETH, optional)</label><input id="devBuyEth" value="0" /></div>
+    </div>
+    <div class="actions">
+      <button class="btn" id="simulate" disabled>Simulate</button>
+      <button class="btn primary" id="launch" disabled>Launch</button>
+    </div>
+    <div class="note" id="status"></div>
+  </div>
+
+  <div class="panel">
+    <h2>Result</h2>
+    <div id="result" class="out">Connect a wallet, fill in the token, then simulate.</div>
+  </div>
+</div>
+
+<script src="./app.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+let account = null;
+
+const PRESETS = {
+  standard: { startMcapUsd: 10000000, endMcapUsd: 100000, numTokensToSell: 850000000, fee: 10000, tickSpacing: 30, days: 7, epochHours: 12, lockDays: 365, ourShare: 0.95 },
+  wide:     { startMcapUsd: 25000000, endMcapUsd: 250000, numTokensToSell: 700000000, fee: 10000, tickSpacing: 30, days: 14, epochHours: 24, lockDays: 365, ourShare: 0.9 },
+  custom:   {}
+};
+
+document.querySelectorAll(".chip").forEach((c) => {
+  c.onclick = () => {
+    document.querySelectorAll(".chip").forEach((x) => x.classList.remove("on"));
+    c.classList.add("on");
+    const p = PRESETS[c.dataset.preset];
+    for (const k in p) if ($(k)) $(k).value = p[k];
+  };
+});
+
+function cfg() {
+  return {
+    name: $("name").value.trim(),
+    symbol: $("symbol").value.trim(),
+    tokenURI: $("tokenURI").value.trim(),
+    initialSupply: $("initialSupply").value.trim(),
+    numTokensToSell: $("numTokensToSell").value.trim(),
+    startMcapUsd: Number($("startMcapUsd").value),
+    endMcapUsd: Number($("endMcapUsd").value),
+    fee: Number($("fee").value),
+    tickSpacing: Number($("tickSpacing").value),
+    durationSeconds: Math.round(Number($("days").value) * 86400),
+    epochLengthSeconds: Math.round(Number($("epochHours").value) * 3600),
+    minProceedsEth: $("minProceedsEth").value.trim(),
+    maxProceedsEth: $("maxProceedsEth").value.trim(),
+    lockDurationSeconds: Math.round(Number($("lockDays").value) * 86400),
+    ourShare: Number($("ourShare").value),
+    devBuyEth: $("devBuyEth").value.trim() || "0",
+  };
+}
+
+function validate(c) {
+  if (!c.name) return "Name is required";
+  if (!c.symbol) return "Symbol is required";
+  if (!/^https?:\/\//.test(c.tokenURI)) return "Metadata URI must be an http(s) URL";
+  if (c.tickSpacing > 30) return "Tick spacing must be 30 or less for a dynamic auction";
+  if (c.startMcapUsd <= c.endMcapUsd) return "Start market cap must be above end market cap";
+  if (Number(c.numTokensToSell) > Number(c.initialSupply)) return "Tokens for sale exceed supply";
+  return null;
+}
+
+$("connect").onclick = async () => {
+  try {
+    account = await window.OpenPad.connect();
+    $("wallet").textContent = account.slice(0, 6) + "…" + account.slice(-4) + " on Base";
+    $("simulate").disabled = false;
+    $("launch").disabled = false;
+  } catch (e) {
+    $("status").innerHTML = '<span class="bad">' + e.message + "</span>";
+  }
+};
+
+$("simulate").onclick = async () => {
+  const c = cfg();
+  const err = validate(c);
+  if (err) return ($("status").innerHTML = '<span class="bad">' + err + "</span>");
+  $("status").textContent = "Simulating against Base mainnet…";
+  $("simulate").disabled = true;
+  try {
+    const s = await window.OpenPad.simulate(c, account);
+    $("result").innerHTML = [
+      ["Predicted token", s.token],
+      ["Hook", s.hook],
+      ["Pool id", s.poolId],
+      ["Integrator", s.integrator],
+      ["Gas", s.gas + " @ " + (Number(s.gasPrice) / 1e9).toFixed(4) + " gwei"],
+      ["Cost", s.costEth + " ETH (~$" + s.costUsd + ")"],
+      ["Your balance", s.balanceEth + " ETH"],
+      ["Funded", s.enough ? "yes" : "no, need more ETH"]
+    ].map(([k, v]) => `<div class="row"><span>${k}</span><span>${v}</span></div>`).join("");
+    $("status").innerHTML = '<span class="ok">Simulation passed.</span> Press Launch to sign it.';
+  } catch (e) {
+    $("status").innerHTML = '<span class="bad">' + (e.shortMessage || e.message) + "</span>";
+  } finally {
+    $("simulate").disabled = false;
+  }
+};
+
+$("launch").onclick = async () => {
+  const c = cfg();
+  const err = validate(c);
+  if (err) return ($("status").innerHTML = '<span class="bad">' + err + "</span>");
+  $("launch").disabled = true;
+  $("status").textContent = "Waiting for your wallet…";
+  try {
+    const r = await window.OpenPad.launch(c, account);
+    $("result").innerHTML = [
+      ["Status", r.status],
+      ["Token", r.token],
+      ["Pool", r.pool],
+      ["Gas used", r.gasUsed],
+      ["Transaction", `<a href="https://basescan.org/tx/${r.hash}" target="_blank" rel="noopener">${r.hash.slice(0, 18)}…</a>`]
+    ].map(([k, v]) => `<div class="row"><span>${k}</span><span>${v}</span></div>`).join("");
+    $("status").innerHTML = '<span class="ok">Launched.</span>';
+  } catch (e) {
+    $("status").innerHTML = '<span class="bad">' + (e.shortMessage || e.message) + "</span>";
+  } finally {
+    $("launch").disabled = false;
+  }
+};
+</script>
+</body>
+</html>
