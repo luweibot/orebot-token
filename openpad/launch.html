@@ -69,6 +69,17 @@
   </div>
 
   <div class="panel">
+    <h2>Creator earnings</h2>
+    <div class="grid">
+      <div><label>Creator fee recipient</label><input id="creator" placeholder="0x… defaults to your wallet" /></div>
+      <div><label>Streamed fee split</label><input value="50% creator / 45% OpenPad / 5% Doppler" disabled /></div>
+    </div>
+    <p class="note">After the auction migrates to Uniswap v4, the locked position's swap fees stream for a year.
+    Half goes to this address, 45% to OpenPad, 5% to Doppler's airlock. Leave it blank to keep the full 95% yourself
+    only if you are launching from the OpenPad treasury wallet.</p>
+  </div>
+
+  <div class="panel">
     <h2>Sale</h2>
     <div class="grid">
       <div><label>Initial supply</label><input id="initialSupply" value="1000000000" /></div>
@@ -152,6 +163,7 @@ function cfg() {
     maxProceedsEth: $("maxProceedsEth").value.trim(),
     lockDurationSeconds: Math.round(Number($("lockDays").value) * 86400),
     ourShare: Number($("ourShare").value),
+    creator: ($("creator") && $("creator").value.trim()) || account || "",
     devBuyEth: $("devBuyEth").value.trim() || "0",
   };
 }
@@ -170,6 +182,7 @@ $("connect").onclick = async () => {
   try {
     account = await window.OpenPad.connect();
     $("wallet").textContent = account.slice(0, 6) + "…" + account.slice(-4) + " on Base";
+    if ($("creator") && !$("creator").value) $("creator").placeholder = account;
     $("simulate").disabled = false;
     $("launch").disabled = false;
     $("hosted").disabled = false;
@@ -191,6 +204,7 @@ $("simulate").onclick = async () => {
       ["Hook", s.hook],
       ["Pool id", s.poolId],
       ["Integrator", s.integrator],
+      ["Creator (50%)", s.creator || "you"],
       ["Gas", s.gas + " @ " + (Number(s.gasPrice) / 1e9).toFixed(4) + " gwei"],
       ["Cost", s.costEth + " ETH (~$" + s.costUsd + ")"],
       ["Your balance", s.balanceEth + " ETH"],
