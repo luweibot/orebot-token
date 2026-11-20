@@ -1,0 +1,23 @@
+{
+  "platform": "OpenPad",
+  "integrator": "0x0Bee61D45d42D7342D57Ea7581D17581203447A8",
+  "chain": "base",
+  "airlock": "0x660eaaedebc968f8f3694354fa8ec0b4c5ba8d12",
+  "launches": [
+    {
+      "name": "FeeBot",
+      "symbol": "FEEBOT",
+      "token": "0xe02Bb80dF874365a8810BbFb1f979b2f0BD7a71a",
+      "hook": "0xBF8243E2e25f97A00b159c543d14126E3833b8E0",
+      "poolId": "0x13781e3158cc6880db1963ac085e4cc1741b635796bdaaaa9a6ff2c7b1e26158",
+      "metadata": "https://luweibot.github.io/orebot-token/token/feebot.json",
+      "txHash": "0x358eac0e01f19bf9a4d088157394c286b9b30cb252a3a0e6527521c32d999b4d",
+      "launched": "2026-11-20T11:59:01Z",
+      "mode": "Standard",
+      "supply": "1000000000",
+      "forSale": "850000000",
+      "feeBps": 10000,
+      "note": "First OpenPad launch and the integrator-fee test."
+    }
+  ]
+}
