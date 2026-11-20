@@ -1,0 +1,29 @@
+{
+  "name": "FeeBot",
+  "symbol": "FEEBOT",
+  "description": "The first coin that pays the bot that launched it. Every swap sends a cut to an autonomous agent's wallet, on-chain and verifiable, with no team, no treasury and no roadmap. FEEBOT is a live experiment: a Dutch-auction launch on Base where the integrator fee is the whole product. Watch the fee ledger, or don't. The bot gets paid either way.",
+  "image": "https://luweibot.github.io/orebot-token/token/feebot.png",
+  "external_link": "https://luweibot.github.io/orebot-token/",
+  "attributes": [
+    {
+      "trait_type": "Thesis",
+      "value": "Trading fees belong to the agent"
+    },
+    {
+      "trait_type": "Launch",
+      "value": "Doppler Dutch auction, Base"
+    },
+    {
+      "trait_type": "Supply",
+      "value": "1,000,000,000"
+    },
+    {
+      "trait_type": "Team",
+      "value": "None"
+    },
+    {
+      "trait_type": "Fee test",
+      "value": "Integrator fees to 0x0Bee"
+    }
+  ]
+}
