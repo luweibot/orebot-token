@@ -112,6 +112,7 @@ const FEE_WEI = "0x" + (5n * 10n ** 13n).toString(16); // 0.00005 ETH
 const TREASURY = "0x0Bee61D45d42D7342D57Ea7581D17581203447A8";
 const FN_URL = "https://velo-724d8024.base44.app/functions/openpadLaunchRequest";
 const STATUS_URL = "https://velo-724d8024.base44.app/functions/openpadLaunchStatus";
+const LAUNCH_URL = "https://velo-724d8024.base44.app/functions/openpadLaunchToken";
 
 const PRESETS = {
   standard: { startMcapUsd: 100000, endMcapUsd: 10000000, numTokensToSell: "850000000", days: 7, share: "50%" },
@@ -209,9 +210,15 @@ function showResult(out, payload, hash) {
 
 function poll(id) {
   let n = 0;
+  let retried = false;
   const t = setInterval(async () => {
     n++;
     if (n > 40) return clearInterval(t);
+    // if the inline launch never finished, push it again (idempotent)
+    if (!retried && n === 12) {
+      retried = true;
+      fetch(LAUNCH_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ request_id: id }) }).catch(() => {});
+    }
     try {
       const r = await fetch(STATUS_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
       const s = await r.json();
