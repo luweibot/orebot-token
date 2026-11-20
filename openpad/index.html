@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>OpenPad — launch anything, keep the fees</title>
+<meta name="description" content="OpenPad is a launchpad on Base built on Doppler. Launch a coin in one transaction; trading fees route to the platform and the launcher, on-chain." />
+<style>
+  :root{
+    --bg:#07090f; --panel:#0d1119; --line:#1c2333; --ink:#e8edf7; --dim:#8b97ad;
+    --gold:#f2b544; --cyan:#39e6d0; --green:#4ade80; --red:#f87171;
+    --mono:ui-monospace,SFMono-Regular,Menlo,monospace;
+    --sans:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.5;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+  header{position:sticky;top:0;z-index:20;background:rgba(7,9,15,.86);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  .bar{display:flex;align-items:center;gap:28px;height:64px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:-.02em;font-size:18px}
+  .mark{width:26px;height:26px;flex:0 0 26px}
+  nav{display:flex;gap:22px;font-size:14px;color:var(--dim)}
+  nav a:hover{color:var(--ink)}
+  .spacer{flex:1}
+  .pill{font-size:13px;padding:8px 14px;border:1px solid var(--line);border-radius:999px;color:var(--dim);display:flex;gap:8px;align-items:center}
+  .pill b{color:var(--gold);font-weight:600}
+  .hero{padding:76px 0 40px;border-bottom:1px solid var(--line)}
+  h1{font-size:clamp(38px,6vw,64px);line-height:1.02;letter-spacing:-.035em;margin:0 0 18px;font-weight:800}
+  h1 em{font-style:normal;color:var(--cyan)}
+  .lede{font-size:18px;color:var(--dim);max-width:56ch;margin:0 0 34px}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+  .stat .k{font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--dim);margin-bottom:8px}
+  .stat .v{font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+  .stat .v small{font-size:13px;color:var(--dim);font-weight:500;margin-left:4px}
+  section{padding:56px 0;border-bottom:1px solid var(--line)}
+  .sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:26px}
+  h2{font-size:26px;letter-spacing:-.02em;margin:0;font-weight:700}
+  .sec-head p{margin:0;color:var(--dim);font-size:14px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;transition:border-color .15s}
+  .card:hover{border-color:#2b3650}
+  .card-top{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+  .sym{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-weight:800;font-size:13px;
+        background:linear-gradient(160deg,#1a2130,#0f1420);border:1px solid #263049;color:var(--gold);font-family:var(--mono)}
+  .card h3{margin:0;font-size:16px;letter-spacing:-.01em}
+  .tick{font-family:var(--mono);font-size:12px;color:var(--dim)}
+  .badge{margin-left:auto;font-size:10px;text-transform:uppercase;letter-spacing:.1em;padding:4px 8px;border-radius:6px;
+         border:1px solid #2a3a2f;color:var(--green);background:#0f1a13}
+  .rows{display:grid;gap:9px;font-size:13px}
+  .row{display:flex;justify-content:space-between;gap:12px}
+  .row span:first-child{color:var(--dim)}
+  .row span:last-child{font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:12.5px}
+  .addr{font-family:var(--mono);font-size:11px;color:var(--dim);margin-top:16px;padding-top:14px;border-top:1px solid var(--line);
+        display:flex;justify-content:space-between;gap:10px;align-items:center}
+  .addr a{color:var(--cyan)}
+  .muted{color:var(--dim)}
+  .presets{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .preset{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px}
+  .preset.hot{border-color:#3a4a2a;box-shadow:inset 0 0 0 1px rgba(242,181,68,.12)}
+  .preset h3{margin:0 0 4px;font-size:17px}
+  .preset .sub{font-size:12.5px;color:var(--dim);margin-bottom:18px;min-height:34px}
+  .preset ul{list-style:none;margin:0;padding:0;display:grid;gap:9px;font-size:13px}
+  .preset li{display:flex;justify-content:space-between;gap:10px}
+  .preset li span:first-child{color:var(--dim)}
+  .preset li span:last-child{font-family:var(--mono);font-size:12.5px}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:6px}
+  th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line)}
+  th{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--dim);font-weight:600}
+  td:last-child,th:last-child{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono)}
+  .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;counter-reset:s}
+  .step{position:relative;padding-top:42px}
+  .step:before{counter-increment:s;content:"0" counter(s);position:absolute;top:0;left:0;font-family:var(--mono);font-size:12px;
+               color:var(--cyan);letter-spacing:.1em}
+  .step h4{margin:0 0 6px;font-size:15px}
+  .step p{margin:0;color:var(--dim);font-size:13px}
+  footer{padding:44px 0 64px;color:var(--dim);font-size:13px;display:flex;gap:18px;flex-wrap:wrap;align-items:center}
+  footer .mono{font-family:var(--mono);font-size:12px}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;margin-right:7px;vertical-align:1px}
+  @media(max-width:860px){
+    .stats{grid-template-columns:repeat(2,1fr)}
+    .presets,.steps{grid-template-columns:1fr}
+    nav{display:none}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap bar">
+    <div class="brand">
+      <svg class="mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <circle cx="16" cy="16" r="14.5" stroke="#f2b544" stroke-width="1.6"/>
+        <path d="M16 6.5v19" stroke="#39e6d0" stroke-width="1.6" stroke-linecap="round"/>
+        <path d="M10.5 12.5c0-2.2 2.5-3.6 5.5-3.6s5.5 1.4 5.5 3.6-2.5 3.4-5.5 4-5.5 1.8-5.5 4 2.5 3.6 5.5 3.6 5.5-1.4 5.5-3.6" stroke="#f2b544" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+      OpenPad
+    </div>
+    <nav>
+      <a href="#tokens">Tokens</a>
+      <a href="#presets">Launch</a>
+      <a href="#fees">Fees</a>
+      <a href="#how">How it works</a>
+    </nav>
+    <div class="spacer"></div>
+    <div class="pill"><b>Base</b> · self-serve launches ship in M2</div>
+  </div>
+</header>
+
+<div class="wrap hero">
+  <h1>Launch anything.<br /><em>Keep the fees.</em></h1>
+  <p class="lede">OpenPad is a launchpad on Base built directly on Doppler. One transaction creates the token, the
+  Dutch auction and the pool. Every trade pays the platform and the launcher in the quote token, verifiable on-chain,
+  with no team allocation and no hidden treasury.</p>
+  <div class="stats">
+    <div class="stat"><div class="k">Launches</div><div class="v" id="stat-launches">—</div></div>
+    <div class="stat"><div class="k">Integrator fees accrued</div><div class="v" id="stat-fees">—</div></div>
+    <div class="stat"><div class="k">Platform share</div><div class="v">75<small>% of fees</small></div></div>
+    <div class="stat"><div class="k">Launch cost</div><div class="v">0.00004<small>ETH</small></div></div>
+  </div>
+</div>
+
+<div class="wrap" id="tokens">
+  <section>
+    <div class="sec-head">
+      <h2>Tokens</h2>
+      <p>Everything launched through the OpenPad integrator. Prices stream from GeckoTerminal.</p>
+    </div>
+    <div class="grid" id="cards"><div class="card muted">Loading launches…</div></div>
+  </section>
+</div>
+
+<div class="wrap" id="presets">
+  <section>
+    <div class="sec-head">
+      <h2>Launch presets</h2>
+      <p>Three shapes cover almost everything. All are Doppler dynamic auctions with WETH as the quote token.</p>
+    </div>
+    <div class="presets">
+      <div class="preset hot">
+        <h3>Standard</h3>
+        <div class="sub">The default. Wide auction, 1% fee, fast graduation.</div>
+        <ul>
+          <li><span>Supply</span><span>1,000,000,000</span></li>
+          <li><span>For sale</span><span>85%</span></li>
+          <li><span>Auction</span><span>$100k → $10M</span></li>
+          <li><span>Duration</span><span>7 days</span></li>
+          <li><span>Swap fee</span><span>1.00%</span></li>
+          <li><span>Locked</span><span>15%, 1 year</span></li>
+        </ul>
+      </div>
+      <div class="preset">
+        <h3>Advanced</h3>
+        <div class="sub">Custom market cap range, fee and vesting for the creator.</div>
+        <ul>
+          <li><span>Supply</span><span>custom</span></li>
+          <li><span>For sale</span><span>50–95%</span></li>
+          <li><span>Auction</span><span>custom ticks</span></li>
+          <li><span>Duration</span><span>1–14 days</span></li>
+          <li><span>Swap fee</span><span>0.30–2.00%</span></li>
+          <li><span>Locked</span><span>0–30%</span></li>
+        </ul>
+      </div>
+      <div class="preset">
+        <h3>Tax</h3>
+        <div class="sub">Fee on transfers routed to the creator, for agent-run coins.</div>
+        <ul>
+          <li><span>Supply</span><span>1,000,000,000</span></li>
+          <li><span>For sale</span><span>70%</span></li>
+          <li><span>Auction</span><span>$100k → $10M</span></li>
+          <li><span>Duration</span><span>7 days</span></li>
+          <li><span>Transfer tax</span><span>3%</span></li>
+          <li><span>Locked</span><span>30%, 1 day</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="wrap" id="fees">
+  <section>
+    <div class="sec-head">
+      <h2>Where the fee goes</h2>
+      <p>One fee per trade, paid in WETH, split inside the swap. Nobody has to sell the coin to get paid.</p>
+    </div>
+    <table>
+      <thead><tr><th>Recipient</th><th>Share of a 1.00% trade fee</th><th>On $100k volume</th></tr></thead>
+      <tbody>
+        <tr><td>Protocol (Airlock)</td><td>5%</td><td>$50</td></tr>
+        <tr><td>Integrator (OpenPad)</td><td>75%</td><td>$750</td></tr>
+        <tr><td>Launcher / creator</td><td>20%</td><td>$200</td></tr>
+      </tbody>
+    </table>
+    <p class="muted" style="font-size:12.5px;margin-top:14px">
+      The integrator cut is a protocol constant of the Doppler hook, so it is identical for every coin on OpenPad and
+      cannot be changed after a launch. Launcher shares are set per launch by the preset.
+    </p>
+  </section>
+</div>
+
+<div class="wrap" id="how">
+  <section>
+    <div class="sec-head"><h2>How a launch works</h2></div>
+    <div class="steps">
+      <div class="step"><h4>Pick a preset</h4><p>Supply, auction range, fee and vesting are fixed before signing and immutable after.</p></div>
+      <div class="step"><h4>Sign one transaction</h4><p>Your wallet calls Doppler's <span class="mono">create()</span>. Token, auction and pool appear together.</p></div>
+      <div class="step"><h4>Trade the curve</h4><p>Price descends from the top of the range until buyers clear it or the auction ends.</p></div>
+      <div class="step"><h4>Fees accrue</h4><p>Each swap pays the integrator and the launcher in WETH. Claim any time, no lockup.</p></div>
+    </div>
+  </section>
+</div>
+
+<div class="wrap">
+  <footer>
+    <span><span class="dot"></span>Live on Base</span>
+    <span>Integrator <span class="mono" id="integrator">0x0Bee…47A8</span></span>
+    <span>Engine: Doppler Airlock</span>
+    <span>OpenPad · M1</span>
+  </footer>
+</div>
+
+<script>
+const RPC = "https://base.publicnode.com";
+const WETH = "0x4200000000000000000000000000000000000006";
+const SEL_INTEGRATOR_FEES = "0xe7f0d8f1";
+
+const short = (a) => a ? a.slice(0,6) + "…" + a.slice(-4) : "";
+const fmt = (n, d = 2) => n === null || n === undefined ? "—" :
+  Number(n).toLocaleString(undefined, { maximumFractionDigits: d, minimumFractionDigits: 0 });
+const usd = (n) => n === null || n === undefined ? "—" :
+  "$" + Number(n).toLocaleString(undefined, { maximumFractionDigits: 0 });
+
+async function rpcCall(to, data) {
+  try {
+    const r = await fetch(RPC, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "eth_call", params: [{ to, data }, "latest"] })
+    });
+    const j = await r.json();
+    return j.result ? BigInt(j.result) : 0n;
+  } catch { return 0n; }
+}
+
+async function market(token) {
+  try {
+    const r = await fetch(`https://api.geckoterminal.com/api/v2/networks/base/tokens/${token}`, { headers: { Accept: "application/json" } });
+    const j = await r.json();
+    const a = j.data?.attributes || {};
+    return { price: a.price_usd, fdv: a.fdv_usd, vol: a.volume_usd?.h24, liq: a.total_reserve_in_usd };
+  } catch { return {}; }
+}
+
+function card(l, m, feesWei, balWei) {
+  const price = m.price ? "$" + Number(m.price).toPrecision(4) : "no trades yet";
+  const fees = Number(feesWei) / 1e18;
+  const bal = Number(balWei) / 1e18;
+  return `
+  <div class="card">
+    <div class="card-top">
+      <div class="sym">${l.symbol.slice(0,4)}</div>
+      <div>
+        <h3>${l.name}</h3>
+        <div class="tick">${l.symbol} · ${l.mode}</div>
+      </div>
+      <div class="badge">OpenPad</div>
+    </div>
+    <div class="rows">
+      <div class="row"><span>Price</span><span>${price}</span></div>
+      <div class="row"><span>FDV</span><span>${usd(m.fdv)}</span></div>
+      <div class="row"><span>24h volume</span><span>${usd(m.vol)}</span></div>
+      <div class="row"><span>Liquidity</span><span>${usd(m.liq)}</span></div>
+      <div class="row"><span>Integrator fees</span><span>${fees.toFixed(6)} WETH</span></div>
+      <div class="row"><span>Launched</span><span>${(l.launched || "").slice(0,10)}</span></div>
+    </div>
+    <div class="addr">
+      <span>${short(l.token)}</span>
+      <a href="https://basescan.org/token/${l.token}" target="_blank" rel="noopener">Basescan ↗</a>
+    </div>
+  </div>`;
+}
+
+(async () => {
+  let pad;
+  try { pad = await (await fetch("./pad.json", { cache: "no-store" })).json(); }
+  catch { document.getElementById("cards").innerHTML = '<div class="card muted">Could not load pad.json</div>'; return; }
+
+  const integrator = pad.integrator;
+  document.getElementById("integrator").textContent = short(integrator);
+  document.getElementById("stat-launches").textContent = pad.launches.length;
+
+  let totalFees = 0n;
+  const cards = [];
+  for (const l of pad.launches) {
+    const data = SEL_INTEGRATOR_FEES + integrator.toLowerCase().replace("0x","").padStart(64,"0") + WETH.replace("0x","").padStart(64,"0");
+    const [m, fees, bal] = await Promise.all([
+      market(l.token),
+      rpcCall(pad.airlock, data),
+      rpcCall(l.token, "0x70a08231" + integrator.toLowerCase().replace("0x","").padStart(64,"0"))
+    ]);
+    totalFees += fees;
+    cards.push(card(l, m, fees, bal));
+  }
+  document.getElementById("cards").innerHTML = cards.join("");
+  document.getElementById("stat-fees").innerHTML = (Number(totalFees) / 1e18).toFixed(6) + "<small>WETH</small>";
+})();
+</script>
+</body>
+</html>
