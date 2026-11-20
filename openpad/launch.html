@@ -73,8 +73,8 @@
     <div class="grid">
       <div><label>Initial supply</label><input id="initialSupply" value="1000000000" /></div>
       <div><label>Tokens for sale</label><input id="numTokensToSell" value="850000000" /></div>
-      <div><label>Start market cap (USD)</label><input id="startMcapUsd" value="10000000" /></div>
-      <div><label>End market cap (USD)</label><input id="endMcapUsd" value="100000" /></div>
+      <div><label>Auction floor mcap (USD)</label><input id="startMcapUsd" value="100000" /></div>
+      <div><label>Auction ceiling mcap (USD)</label><input id="endMcapUsd" value="10000000" /></div>
       <div><label>Swap fee (bps)</label><input id="fee" value="10000" /></div>
       <div><label>Tick spacing</label><input id="tickSpacing" value="30" /></div>
       <div><label>Auction days</label><input id="days" value="7" /></div>
@@ -104,8 +104,8 @@ const $ = (id) => document.getElementById(id);
 let account = null;
 
 const PRESETS = {
-  standard: { startMcapUsd: 10000000, endMcapUsd: 100000, numTokensToSell: 850000000, fee: 10000, tickSpacing: 30, days: 7, epochHours: 12, lockDays: 365, ourShare: 0.95 },
-  wide:     { startMcapUsd: 25000000, endMcapUsd: 250000, numTokensToSell: 700000000, fee: 10000, tickSpacing: 30, days: 14, epochHours: 24, lockDays: 365, ourShare: 0.9 },
+  standard: { startMcapUsd: 100000, endMcapUsd: 10000000, numTokensToSell: 850000000, fee: 10000, tickSpacing: 30, days: 7, epochHours: 12, lockDays: 365, ourShare: 0.95 },
+  wide:     { startMcapUsd: 250000, endMcapUsd: 25000000, numTokensToSell: 700000000, fee: 10000, tickSpacing: 30, days: 14, epochHours: 24, lockDays: 365, ourShare: 0.9 },
   custom:   {}
 };
 
@@ -144,7 +144,7 @@ function validate(c) {
   if (!c.symbol) return "Symbol is required";
   if (!/^https?:\/\//.test(c.tokenURI)) return "Metadata URI must be an http(s) URL";
   if (c.tickSpacing > 30) return "Tick spacing must be 30 or less for a dynamic auction";
-  if (c.startMcapUsd <= c.endMcapUsd) return "Start market cap must be above end market cap";
+  if (c.startMcapUsd >= c.endMcapUsd) return "Auction floor must be below the ceiling";
   if (Number(c.numTokensToSell) > Number(c.initialSupply)) return "Tokens for sale exceed supply";
   return null;
 }
