@@ -3,42 +3,46 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>OpenPad — launch a token</title>
+<title>OpenPad — create a token</title>
 <style>
   :root{--bg:#07090f;--panel:#0d1119;--line:#1c2333;--ink:#e8edf7;--dim:#8b97ad;--gold:#f2b544;--cyan:#39e6d0;--green:#4ade80;--red:#f87171;--mono:ui-monospace,Menlo,monospace}
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,sans-serif;line-height:1.5}
   a{color:var(--cyan);text-decoration:none}
-  .wrap{max-width:920px;margin:0 auto;padding:0 24px}
-  header{border-bottom:1px solid var(--line);background:rgba(7,9,15,.9);position:sticky;top:0;z-index:9}
-  .bar{display:flex;align-items:center;gap:20px;height:64px}
-  .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;letter-spacing:-.02em}
+  .wrap{max-width:880px;margin:0 auto;padding:0 24px}
+  header{border-bottom:1px solid var(--line);background:rgba(7,9,15,.92);position:sticky;top:0;z-index:9}
+  .bar{display:flex;align-items:center;gap:16px;height:64px}
+  .brand{font-weight:700;font-size:18px;letter-spacing:-.02em}
   .spacer{flex:1}
-  .btn{font:inherit;font-size:13px;padding:9px 16px;border-radius:10px;border:1px solid var(--line);background:#121826;color:var(--ink);cursor:pointer}
+  .btn{font:inherit;font-size:13px;padding:10px 16px;border-radius:10px;border:1px solid var(--line);background:#121826;color:var(--ink);cursor:pointer}
   .btn:hover{border-color:#2b3650}
   .btn.primary{background:var(--gold);border-color:var(--gold);color:#141005;font-weight:700}
   .btn:disabled{opacity:.45;cursor:not-allowed}
-  h1{font-size:34px;letter-spacing:-.03em;margin:44px 0 8px}
-  p.lede{color:var(--dim);margin:0 0 32px;font-size:15px;max-width:60ch}
+  h1{font-size:34px;letter-spacing:-.03em;margin:40px 0 8px}
+  p.lede{color:var(--dim);margin:0 0 28px;font-size:15px;max-width:62ch}
   .panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px;margin-bottom:18px}
   .panel h2{font-size:13px;text-transform:uppercase;letter-spacing:.14em;color:var(--dim);margin:0 0 16px;font-weight:600}
   .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
   label{display:block;font-size:12px;color:var(--dim);margin-bottom:6px}
-  input,select{width:100%;font:inherit;font-size:14px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:#0a0e16;color:var(--ink)}
-  input:focus,select:focus{outline:none;border-color:#33405c}
-  .presets{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}
-  .chip{font-size:13px;padding:8px 14px;border-radius:999px;border:1px solid var(--line);cursor:pointer;color:var(--dim)}
+  input,textarea,select{width:100%;font:inherit;font-size:14px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:#0a0e16;color:var(--ink)}
+  textarea{resize:vertical;min-height:74px}
+  input:focus,textarea:focus{outline:none;border-color:#33405c}
+  .presets{display:flex;gap:10px;flex-wrap:wrap}
+  .chip{font-size:13px;padding:9px 15px;border-radius:999px;border:1px solid var(--line);cursor:pointer;color:var(--dim)}
   .chip.on{border-color:var(--gold);color:var(--gold);background:#1a1509}
-  .out{font-family:var(--mono);font-size:12.5px;white-space:pre-wrap;color:var(--dim);background:#0a0e16;border:1px solid var(--line);border-radius:12px;padding:16px;min-height:70px}
-  .out b{color:var(--ink);font-weight:600}
-  .row{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid #131a26;font-size:13px}
+  .chip small{display:block;font-size:11px;opacity:.75;margin-top:2px}
+  .logo{display:flex;gap:16px;align-items:center}
+  .drop{width:104px;height:104px;border-radius:16px;border:1px dashed #2b3650;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#0a0e16;flex:0 0 auto}
+  .drop img{width:100%;height:100%;object-fit:cover}
+  .drop span{font-size:11px;color:var(--dim);text-align:center;padding:6px}
+  .row{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid #131a26;font-size:13px}
   .row:last-child{border-bottom:none}
   .row span:first-child{color:var(--dim)}
-  .row span:last-child{font-family:var(--mono);font-size:12.5px}
-  .actions{display:flex;gap:10px;margin-top:18px}
+  .row span:last-child{font-family:var(--mono);font-size:12.5px;text-align:right;word-break:break-all}
   .note{font-size:12px;color:var(--dim);margin-top:12px}
   .ok{color:var(--green)}.bad{color:var(--red)}
   .hide{display:none}
+  .actions{display:flex;gap:10px;margin-top:18px;align-items:center;flex-wrap:wrap}
 </style>
 </head>
 <body>
@@ -50,230 +54,183 @@
 </div></header>
 
 <div class="wrap">
-  <h1>Launch a token</h1>
-  <p class="lede">Everything is built in your browser and signed by your own wallet. OpenPad is set as the integrator,
-  which is the only thing the platform takes. Nothing is sent until you press Launch and approve it in your wallet.</p>
+  <h1>Create a token</h1>
+  <p class="lede">Fill in your token, upload a logo, pay the flat creation fee, and OpenPad launches it on Doppler
+  for you. No wallet setup, no gas estimation, no metadata hosting to figure out. You keep the token and half of
+  every fee it earns after launch.</p>
 
   <div class="panel">
-    <h2>Preset</h2>
+    <h2>Token</h2>
+    <div class="grid">
+      <div><label>Name</label><input id="name" placeholder="FeeBot" maxlength="64" /></div>
+      <div><label>Symbol</label><input id="symbol" placeholder="FEEBOT" maxlength="16" /></div>
+      <div style="grid-column:1/-1"><label>Official website (optional)</label><input id="website" placeholder="https://yoursite.com" /></div>
+      <div style="grid-column:1/-1"><label>Description (optional)</label><textarea id="description" maxlength="600" placeholder="What is this token about?"></textarea></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Logo</h2>
+    <div class="logo">
+      <label class="drop" id="drop" for="logo"><span id="dropText">Upload image<br/>PNG, JPG</span><img id="preview" class="hide" alt="" /></label>
+      <div>
+        <input id="logo" type="file" accept="image/*" class="hide" />
+        <div class="note" style="margin-top:0">Square images look best. We resize to 512px and pin it to IPFS,
+        so your logo and metadata live at a permanent link. No hosting needed.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Launch preset</h2>
     <div class="presets">
-      <div class="chip on" data-preset="standard">Standard</div>
-      <div class="chip" data-preset="wide">Wide auction</div>
-      <div class="chip" data-preset="custom">Custom</div>
+      <div class="chip on" data-preset="standard">Standard<small>7 days · $100k → $10M</small></div>
+      <div class="chip" data-preset="wide">Wide auction<small>14 days · $250k → $25M</small></div>
+      <div class="chip" data-preset="custom">Custom<small>tell us the details</small></div>
     </div>
-    <div class="grid">
-      <div><label>Name</label><input id="name" placeholder="FeeBot" /></div>
-      <div><label>Symbol</label><input id="symbol" placeholder="FEEBOT" /></div>
-      <div style="grid-column:1/-1"><label>Metadata URI (https)</label><input id="tokenURI" placeholder="https://…/token.json" /></div>
-    </div>
+    <div class="note" id="presetNote">Standard: 1B supply, 850M for sale, 1% swap fee, one-year fee stream at 50% to you.</div>
   </div>
 
   <div class="panel">
-    <h2>Creator earnings</h2>
-    <div class="grid">
-      <div><label>Creator fee recipient</label><input id="creator" placeholder="0x… defaults to your wallet" /></div>
-      <div><label>Streamed fee split</label><input value="50% creator / 45% OpenPad / 5% Doppler" disabled /></div>
-    </div>
-    <p class="note">After the auction migrates to Uniswap v4, the locked position's swap fees stream for a year.
-    Half goes to this address, 45% to OpenPad, 5% to Doppler's airlock. Leave it blank to keep the full 95% yourself
-    only if you are launching from the OpenPad treasury wallet.</p>
-  </div>
-
-  <div class="panel">
-    <h2>Sale</h2>
-    <div class="grid">
-      <div><label>Initial supply</label><input id="initialSupply" value="1000000000" /></div>
-      <div><label>Tokens for sale</label><input id="numTokensToSell" value="850000000" /></div>
-      <div><label>Auction floor mcap (USD)</label><input id="startMcapUsd" value="100000" /></div>
-      <div><label>Auction ceiling mcap (USD)</label><input id="endMcapUsd" value="10000000" /></div>
-      <div><label>Swap fee (bps)</label><input id="fee" value="10000" /></div>
-      <div><label>Tick spacing</label><input id="tickSpacing" value="30" /></div>
-      <div><label>Auction days</label><input id="days" value="7" /></div>
-      <div><label>Epoch hours</label><input id="epochHours" value="12" /></div>
-      <div><label>Min proceeds (ETH)</label><input id="minProceedsEth" value="1.25" /></div>
-      <div><label>Max proceeds (ETH)</label><input id="maxProceedsEth" value="10" /></div>
-      <div><label>Fee lock (days)</label><input id="lockDays" value="365" /></div>
-      <div><label>Creator fee share</label><input id="ourShare" value="0.95" /></div>
-      <div><label>Dev buy (ETH, optional)</label><input id="devBuyEth" value="0" /></div>
-    </div>
+    <h2>Creation fee</h2>
+    <div id="summary"></div>
     <div class="actions">
-      <button class="btn" id="simulate" disabled>Simulate</button>
-      <button class="btn primary" id="launch" disabled>Launch</button>
+      <button class="btn primary" id="submit" disabled>Pay 0.00005 ETH and launch</button>
     </div>
     <div class="note" id="status"></div>
   </div>
 
-  <div class="panel">
-    <h2>Hosted launch: we sign it for you</h2>
-    <p style="font-size:13px;color:var(--dim);margin:0 0 14px">
-      Do not want to sign the launch transaction yourself? Pay a flat <b>0.00005 ETH</b> creation fee to the OpenPad
-      treasury and we run the launch from our own wallet. You keep the token; OpenPad is the integrator and the
-      fee beneficiary. Cost is the same as signing it yourself, minus the wallet setup.
-    </p>
-    <div class="out" id="hostedinfo" style="margin-bottom:14px">Treasury: 0x0Bee61D45d42D7342D57Ea7581D17581203447A8
-Creation fee: 0.00005 ETH (covers ~0.000039 ETH of gas, the rest is the platform margin)</div>
-    <div class="actions" style="margin-top:0">
-      <button class="btn primary" id="hosted" disabled>Pay 0.00005 ETH and request launch</button>
-      <button class="btn" id="copy" disabled>Copy request</button>
-    </div>
-    <div class="note" id="hostedstatus"></div>
-    <div class="out hide" id="reqout" style="margin-top:12px"></div>
-  </div>
-
-  <div class="panel">
-    <h2>Result</h2>
-    <div id="result" class="out">Connect a wallet, fill in the token, then simulate.</div>
+  <div class="panel hide" id="resultPanel">
+    <h2>Your launch</h2>
+    <div id="result"></div>
   </div>
 </div>
 
-<script src="./app.js"></script>
 <script>
 const $ = (id) => document.getElementById(id);
-let account = null;
+const FEE_WEI = "0x" + (5n * 10n ** 13n).toString(16); // 0.00005 ETH
+const TREASURY = "0x0Bee61D45d42D7342D57Ea7581D17581203447A8";
+const FN_URL = "https://velo-724d8024.base44.app/functions/openpadLaunchRequest";
 
 const PRESETS = {
-  standard: { startMcapUsd: 100000, endMcapUsd: 10000000, numTokensToSell: 850000000, fee: 10000, tickSpacing: 30, days: 7, epochHours: 12, lockDays: 365, ourShare: 0.95 },
-  wide:     { startMcapUsd: 250000, endMcapUsd: 25000000, numTokensToSell: 700000000, fee: 10000, tickSpacing: 30, days: 14, epochHours: 24, lockDays: 365, ourShare: 0.9 },
-  custom:   {}
+  standard: { startMcapUsd: 100000, endMcapUsd: 10000000, numTokensToSell: "850000000", days: 7, share: "50%" },
+  wide:     { startMcapUsd: 250000, endMcapUsd: 25000000, numTokensToSell: "700000000", days: 14, share: "50%" },
+  custom:   { startMcapUsd: null, endMcapUsd: null, numTokensToSell: "you choose", days: 0, share: "50%" },
 };
+let account = null, preset = "standard", imageData = "";
+
+$("summary").innerHTML = [
+  ["Creation fee", "0.00005 ETH"],
+  ["Treasury", TREASURY],
+  ["Network", "Base mainnet"],
+  ["Creator fee share", "50% of streamed swap fees"],
+  ["OpenPad share", "45%"],
+  ["Doppler share", "5%"],
+].map(([k, v]) => `<div class="row"><span>${k}</span><span>${v}</span></div>`).join("");
 
 document.querySelectorAll(".chip").forEach((c) => {
   c.onclick = () => {
     document.querySelectorAll(".chip").forEach((x) => x.classList.remove("on"));
     c.classList.add("on");
-    const p = PRESETS[c.dataset.preset];
-    for (const k in p) if ($(k)) $(k).value = p[k];
+    preset = c.dataset.preset;
+    const p = PRESETS[preset];
+    $("presetNote").textContent = preset === "custom"
+      ? "Custom: tell us the supply, price range, auction length and fee in the description. We confirm the details before launching."
+      : `${preset === "standard" ? "Standard" : "Wide auction"}: ${p.numTokensToSell} of 1B for sale, ${p.days}-day auction, price runs from $${p.endMcapUsd.toLocaleString()} down to $${p.startMcapUsd.toLocaleString()}, ${p.share} of streamed fees to you.`;
   };
 });
 
-function cfg() {
-  return {
-    name: $("name").value.trim(),
-    symbol: $("symbol").value.trim(),
-    tokenURI: $("tokenURI").value.trim(),
-    initialSupply: $("initialSupply").value.trim(),
-    numTokensToSell: $("numTokensToSell").value.trim(),
-    startMcapUsd: Number($("startMcapUsd").value),
-    endMcapUsd: Number($("endMcapUsd").value),
-    fee: Number($("fee").value),
-    tickSpacing: Number($("tickSpacing").value),
-    durationSeconds: Math.round(Number($("days").value) * 86400),
-    epochLengthSeconds: Math.round(Number($("epochHours").value) * 3600),
-    minProceedsEth: $("minProceedsEth").value.trim(),
-    maxProceedsEth: $("maxProceedsEth").value.trim(),
-    lockDurationSeconds: Math.round(Number($("lockDays").value) * 86400),
-    ourShare: Number($("ourShare").value),
-    creator: ($("creator") && $("creator").value.trim()) || account || "",
-    devBuyEth: $("devBuyEth").value.trim() || "0",
+$("logo").onchange = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const img = new Image();
+  img.onload = () => {
+    const size = 512;
+    const canvas = document.createElement("canvas");
+    canvas.width = size; canvas.height = size;
+    const ctx = canvas.getContext("2d");
+    const s = Math.min(img.width, img.height);
+    ctx.drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, size, size);
+    const dataUrl = canvas.toDataURL("image/jpeg", 0.86);
+    imageData = dataUrl.split(",")[1];
+    $("preview").src = dataUrl;
+    $("preview").classList.remove("hide");
+    $("dropText").classList.add("hide");
   };
-}
-
-function validate(c) {
-  if (!c.name) return "Name is required";
-  if (!c.symbol) return "Symbol is required";
-  if (!/^https?:\/\//.test(c.tokenURI)) return "Metadata URI must be an http(s) URL";
-  if (c.tickSpacing > 30) return "Tick spacing must be 30 or less for a dynamic auction";
-  if (c.startMcapUsd >= c.endMcapUsd) return "Auction floor must be below the ceiling";
-  if (Number(c.numTokensToSell) > Number(c.initialSupply)) return "Tokens for sale exceed supply";
-  return null;
-}
+  img.src = URL.createObjectURL(file);
+};
 
 $("connect").onclick = async () => {
   try {
-    account = await window.OpenPad.connect();
+    if (!window.ethereum) throw new Error("No browser wallet found");
+    const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+    account = accounts[0];
+    const cid = await window.ethereum.request({ method: "eth_chainId" });
+    if (parseInt(cid, 16) !== 8453) {
+      try { await window.ethereum.request({ method: "wallet_switchEthereumChain", params: [{ chainId: "0x2105" }] }); }
+      catch { throw new Error("Please switch your wallet to Base"); }
+    }
     $("wallet").textContent = account.slice(0, 6) + "…" + account.slice(-4) + " on Base";
-    if ($("creator") && !$("creator").value) $("creator").placeholder = account;
-    $("simulate").disabled = false;
-    $("launch").disabled = false;
-    $("hosted").disabled = false;
+    $("submit").disabled = false;
   } catch (e) {
     $("status").innerHTML = '<span class="bad">' + e.message + "</span>";
   }
 };
 
-$("simulate").onclick = async () => {
-  const c = cfg();
-  const err = validate(c);
+function validate() {
+  if (!account) return "Connect a wallet first";
+  const name = $("name").value.trim();
+  const symbol = $("symbol").value.trim();
+  if (!name) return "Token name is required";
+  if (!symbol) return "Token symbol is required";
+  if (!/^[A-Za-z0-9]{1,16}$/.test(symbol)) return "Symbol must be letters and digits only, max 16";
+  if (!imageData) return "Upload a logo image";
+  const site = $("website").value.trim();
+  if (site && !/^https?:\/\/\S+\.\S+/.test(site)) return "Website must be a full http(s) URL";
+  return null;
+}
+
+$("submit").onclick = async () => {
+  const err = validate();
   if (err) return ($("status").innerHTML = '<span class="bad">' + err + "</span>");
-  $("status").textContent = "Simulating against Base mainnet…";
-  $("simulate").disabled = true;
-  try {
-    const s = await window.OpenPad.simulate(c, account);
-    $("result").innerHTML = [
-      ["Predicted token", s.token],
-      ["Hook", s.hook],
-      ["Pool id", s.poolId],
-      ["Integrator", s.integrator],
-      ["Creator (50%)", s.creator || "you"],
-      ["Gas", s.gas + " @ " + (Number(s.gasPrice) / 1e9).toFixed(4) + " gwei"],
-      ["Cost", s.costEth + " ETH (~$" + s.costUsd + ")"],
-      ["Your balance", s.balanceEth + " ETH"],
-      ["Funded", s.enough ? "yes" : "no, need more ETH"]
-    ].map(([k, v]) => `<div class="row"><span>${k}</span><span>${v}</span></div>`).join("");
-    $("status").innerHTML = '<span class="ok">Simulation passed.</span> Press Launch to sign it.';
-  } catch (e) {
-    $("status").innerHTML = '<span class="bad">' + (e.shortMessage || e.message) + "</span>";
-  } finally {
-    $("simulate").disabled = false;
-  }
-};
-
-$("launch").onclick = async () => {
-  const c = cfg();
-  const err = validate(c);
-  if (err) return ($("status").innerHTML = '<span class="bad">' + err + "</span>");
-  $("launch").disabled = true;
-  $("status").textContent = "Waiting for your wallet…";
-  try {
-    const r = await window.OpenPad.launch(c, account);
-    $("result").innerHTML = [
-      ["Status", r.status],
-      ["Token", r.token],
-      ["Pool", r.pool],
-      ["Gas used", r.gasUsed],
-      ["Transaction", `<a href="https://basescan.org/tx/${r.hash}" target="_blank" rel="noopener">${r.hash.slice(0, 18)}…</a>`]
-    ].map(([k, v]) => `<div class="row"><span>${k}</span><span>${v}</span></div>`).join("");
-    $("status").innerHTML = '<span class="ok">Launched.</span>';
-  } catch (e) {
-    $("status").innerHTML = '<span class="bad">' + (e.shortMessage || e.message) + "</span>";
-  } finally {
-    $("launch").disabled = false;
-  }
-};
-
-let requestText = "";
-const FEE_WEI = "0x" + (5n * 10n ** 13n).toString(16); // 0.00005 ETH
-
-$("hosted").onclick = async () => {
-  const c = cfg();
-  const err = validate(c);
-  if (err) return ($("hostedstatus").innerHTML = '<span class="bad">' + err + "</span>");
-  $("hosted").disabled = true;
-  $("hostedstatus").textContent = "Confirm the 0.00005 ETH payment in your wallet…";
+  $("submit").disabled = true;
+  $("status").textContent = "Confirm the 0.00005 ETH payment in your wallet…";
   try {
     const hash = await window.ethereum.request({
       method: "eth_sendTransaction",
-      params: [{ from: account, to: window.OpenPad.INTEGRATOR, value: FEE_WEI }],
+      params: [{ from: account, to: TREASURY, value: FEE_WEI }],
     });
-    const preset = document.querySelector(".chip.on")?.dataset.preset || "custom";
-    requestText = JSON.stringify({
-      name: c.name, symbol: c.symbol, tokenURI: c.tokenURI, preset,
-      payer: account, txHash: hash,
-    }, null, 2);
-    $("reqout").classList.remove("hide");
-    $("reqout").textContent = requestText;
-    $("copy").disabled = false;
-    $("hostedstatus").innerHTML = '<span class="ok">Payment sent.</span> Copy the request below and send it to the agent to finish the launch.';
+    $("status").textContent = "Payment sent. Submitting your token details…";
+    const payload = {
+      tokenName: $("name").value.trim(),
+      tokenSymbol: $("symbol").value.trim().toUpperCase(),
+      website: $("website").value.trim(),
+      description: $("description").value.trim(),
+      preset,
+      imageData,
+      payerAddress: account,
+      paymentTxHash: hash,
+    };
+    const res = await fetch(FN_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const out = await res.json();
+    if (!out.ok) throw new Error(out.error || "submission rejected");
+    $("resultPanel").classList.remove("hide");
+    $("result").innerHTML = [
+      ["Status", "Queued for launch"],
+      ["Request", out.id],
+      ["Token", payload.tokenSymbol + " · " + payload.tokenName],
+      ["Payment", `<a href="https://basescan.org/tx/${hash}" target="_blank" rel="noopener">${hash.slice(0, 18)}…</a>`],
+      ["Next", "OpenPad launches it on Doppler within a few minutes. You get the token address here and in chat."],
+    ].map(([k, v]) => `<div class="row"><span>${k}</span><span>${v}</span></div>`).join("");
+    $("status").innerHTML = '<span class="ok">Paid and queued.</span> Your launch is in the queue.';
   } catch (e) {
-    $("hostedstatus").innerHTML = '<span class="bad">' + (e.message || "payment cancelled") + "</span>";
-  } finally {
-    $("hosted").disabled = false;
+    $("status").innerHTML = '<span class="bad">' + (e.message || "something went wrong") + "</span>";
+    $("submit").disabled = false;
   }
-};
-
-$("copy").onclick = async () => {
-  try { await navigator.clipboard.writeText(requestText); $("hostedstatus").innerHTML = '<span class="ok">Copied.</span>'; }
-  catch { $("hostedstatus").textContent = "Copy failed, select the text manually."; }
 };
 </script>
 </body>
